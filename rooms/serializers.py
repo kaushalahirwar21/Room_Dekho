@@ -58,13 +58,10 @@ class PropertySerializer(serializers.ModelSerializer):
 
 
 def build_image_url(image_field, request):
-    if not image_field:
-        return None
+    if not image_field or not image_field.name:
+        return build_static_url('images/logo.png', request)
 
     try:
-        if not image_field.name or not image_field.storage.exists(image_field.name):
-            return build_static_url('images/logo.png', request)
-
         image_url = image_field.url
     except Exception:
         return build_static_url('images/logo.png', request)
