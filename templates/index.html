@@ -266,7 +266,7 @@
                 html += `
                     <div class="property-card">
                         <div class="card-media">
-                            <img src="${img}" alt="${prop.title}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/f1f5f9/94a3b8/png?text=Room+Dekho';">
+                            <img src="${img}" alt="${prop.title}" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/600x400/f1f5f9/94a3b8/png?text=Room+Dekho';">
                             <span class="card-badge">${prop.room_type}</span>
                             <button class="card-save-btn" aria-label="Save property" onclick="event.stopPropagation(); toggleSave(${prop.id})">
                                 <i data-lucide="heart" style="width: 18px; height: 18px;"></i>

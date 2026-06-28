@@ -75,13 +75,13 @@
             <!-- Gallery -->
             <div class="gallery-container" id="galleryContainer">
                 <div class="gallery-main" id="mainGalleryImageWrapper">
-                    <img src="{% if property.images.all %}{{ property.images.all.0.image.url }}{% else %}https://placehold.co/1200x700/eff6ff/2563eb/png?text=Room+Dekho{% endif %}" id="mainGalleryImage" alt="{{ property.title }}" onerror="this.onerror=null;this.src='https://placehold.co/1200x700/f1f5f9/94a3b8/png?text=Room+Dekho';">
+                    <img src="{% if property.images.all %}{{ property.images.all.0.image.url }}{% else %}https://placehold.co/1200x700/eff6ff/2563eb/png?text=Room+Dekho{% endif %}" id="mainGalleryImage" alt="{{ property.title }}" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/1200x700/f1f5f9/94a3b8/png?text=Room+Dekho';">
                 </div>
                 {% if property.images.all.count > 1 %}
                 <div class="gallery-thumbnails" id="galleryThumbnails">
                     {% for img in property.images.all %}
                     <div class="gallery-thumbnail {% if forloop.first %}active{% endif %}" onclick="changeMainImage('{{ img.image.url }}', this)">
-                        <img src="{{ img.image.url }}" alt="{{ property.title }} - Thumbnail {{ forloop.counter }}">
+                        <img src="{{ img.image.url }}" alt="{{ property.title }} - Thumbnail {{ forloop.counter }}" loading="lazy">
                     </div>
                     {% endfor %}
                 </div>
