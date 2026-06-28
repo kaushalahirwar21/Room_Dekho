@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-container">
+    <h2 class="text-center mb-4 text-primary">Create an Account</h2>
+    
+    <div id="alertBox" style="display:none; padding: 10px; border-radius: 6px; margin-bottom: 15px; background-color: #ef4444; color: #fff;"></div>
+
+    <form id="signupForm">
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="name" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="email" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label>Mobile Number</label>
+            <input type="text" id="mobile" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label>Join as</label>
+            <select id="role" class="form-control">
+                <option value="Seeker">Room Seeker</option>
+                <option value="Owner">Property Owner</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn" style="width: 100%">Sign Up</button>
+    </form>
+    <div class="text-center mt-4" style="font-size: 0.9rem;">
+        Already signed up? <a href="/login/" style="color: var(--primary)">Login here</a>
+    </div>
+</div>
+
+<div class="form-container" id="otpContainer" style="display: none;">
+    <h3 class="text-center mb-4">Verify Your Email</h3>
+    <p class="text-muted text-center" style="font-size:0.9rem; margin-bottom: 20px;">An OTP has been sent. Please verify to complete registration.</p>
+    <form id="otpForm">
+        <div class="form-group">
+            <label>Enter 6-digit OTP</label>
+            <input type="text" id="otpCode" class="form-control" required maxlength="6">
+        </div>
+        <button type="submit" class="btn" style="width: 100%">Verify OTP</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentEmail = "";
+
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const name = document.getElementById('name').value;
+        const mobile_number = document.getElementById('mobile').value;
+        const role = document.getElementById('role').value;
+        const alertBox = document.getElementById('alertBox');
+        
+        try {
+            const res = await fetch('/api/accounts/signup/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, name, mobile_number, role })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                currentEmail = email;
+                document.getElementById('signupForm').parentElement.style.display = 'none';
+                document.getElementById('otpContainer').style.display = 'block';
+            } else {
+                alertBox.style.display = 'block';
+                let errMsg = 'Signup failed. Please try again.';
+                if (data && typeof data === 'object') {
+                    const firstKey = Object.keys(data)[0];
+                    if (firstKey) {
+                        const val = data[firstKey];
+                        errMsg = Array.isArray(val) ? `${firstKey}: ${val[0]}` : val;
+                    }
+                }
+                alertBox.textContent = errMsg;
+            }
+        } catch (err) {
+            alertBox.style.display = 'block';
+            alertBox.textContent = 'Network Error';
+        }
+    });
+
+    document.getElementById('otpForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const otpCode = document.getElementById('otpCode').value;
+        
+        try {
+            const res = await fetch('/api/accounts/verify-otp/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: currentEmail, otp_code: otpCode })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                alert('Account created & verified. Please login.');
+                window.location.href = '/login/';
+            } else {
+                alert(data.error || 'Verification failed');
+            }
+        } catch (err) {
+            alert('Network Error');
+        }
+    });
+</script>
+{% endblock %}

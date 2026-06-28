@@ -1,0 +1,350 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="ownerDashboard" style="display: none;">
+    <h2>Owner Dashboard</h2>
+    <p class="text-muted mb-4">Manage your properties and booking requests.</p>
+    
+    <button class="btn mb-4" onclick="document.getElementById('addPropertyForm').style.display='block'">+ Add New Property</button>
+
+    <div class="form-container" id="addPropertyForm" style="display: none; margin: 0; max-width: 100%; margin-bottom: 2rem;">
+        <h3>Add Property</h3>
+        <form id="propertyForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="p_title" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Price (₹/month)</label>
+                    <input type="number" id="p_price" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" id="p_location" class="form-control" list="bhopalLocations" required>
+                    <datalist id="bhopalLocations">
+                        <option value="MP Nagar">
+                        <option value="Arera Colony">
+                        <option value="Kolar Road">
+                        <option value="Bawadia Kalan">
+                        <option value="Habibganj">
+                        <option value="Ayodhya Nagar">
+                        <option value="Shahpura">
+                        <option value="Chuna Bhatti">
+                        <option value="Jatpure">
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <label>Room Type</label>
+                    <select id="p_type" class="form-control">
+                        <option value="1RK">1RK</option>
+                        <option value="1BHK">1BHK</option>
+                        <option value="2BHK">2BHK</option>
+                        <option value="PG">PG</option>
+                        <option value="Hostel">Hostel</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="p_desc" class="form-control" required></textarea>
+            </div>
+            <div class="form-group" style="display: flex; align-items: center;">
+                <input type="checkbox" id="p_bachelor" checked style="margin-right: 10px;">
+                <label style="margin: 0; display: inline;">Bachelor Allowed</label>
+            </div>
+            <div class="form-group">
+                <label>Property Images</label>
+                <div class="image-upload-area" id="imageUploadArea">
+                    <input type="file" id="p_images" class="image-input" accept="image/jpeg,image/png,image/webp" multiple onchange="handleImageSelect(this.files)">
+                    <label for="p_images" class="image-upload-label">
+                        <span class="upload-icon">📷</span>
+                        <span>Click or drag images here</span>
+                        <small>JPG, PNG, WebP • Max 5MB each</small>
+                    </label>
+                </div>
+                <div class="image-preview-grid" id="imagePreviewGrid"></div>
+                <div class="upload-error" id="uploadError"></div>
+            </div>
+            <button type="submit" class="btn" id="submitBtn">Save Property</button>
+            <button type="button" class="btn btn-secondary" onclick="closePropertyForm()">Cancel</button>
+        </form>
+    </div>
+
+    <h3>My Properties</h3>
+    <div class="property-grid" id="myPropertiesContainer"></div>
+
+    <h3 class="mt-4">Requests Made To My Properties</h3>
+    <div class="dashboard-list" id="ownerRequestsContainer"></div>
+</div>
+
+<div id="seekerDashboard" style="display: none;">
+    <h2>Seeker Dashboard</h2>
+    <p class="text-muted">Track your booking requests here.</p>
+    
+    <div class="dashboard-list" id="seekerRequestsContainer"></div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const token = localStorage.getItem('access_token');
+    const role = localStorage.getItem('role');
+    const userId = localStorage.getItem('user_id');
+
+    if (!token) {
+        window.location.href = '/login/';
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        if (role === 'Owner') {
+            document.getElementById('ownerDashboard').style.display = 'block';
+            fetchMyProperties();
+            fetchRequests('ownerRequestsContainer');
+        } else if (role === 'Seeker') {
+            document.getElementById('seekerDashboard').style.display = 'block';
+            fetchRequests('seekerRequestsContainer');
+        } else {
+            // Admin or other
+            document.body.innerHTML = '<h2>Access Denied</h2>';
+        }
+    });
+
+    async function fetchMyProperties() {
+        try {
+            const res = await fetch(`/api/properties/?owner=${userId}`);
+            if (!res.ok) {
+                throw new Error('Failed to fetch properties');
+            }
+            const data = await res.json();
+            const container = document.getElementById('myPropertiesContainer');
+            
+            if (!Array.isArray(data) || data.length === 0) {
+                container.innerHTML = '<p>You have not listed any properties yet.</p>';
+                return;
+            }
+            
+            let html = '';
+            data.forEach(prop => {
+                html += `
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title">${prop.title}</h3>
+                            <div class="card-price">₹${prop.price}</div>
+                            <div class="card-info">📍 ${prop.location} | 🏠 ${prop.room_type}</div>
+                            <button class="btn-secondary" onclick="deleteProperty(${prop.id})">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        } catch (error) {
+            console.error(error);
+            document.getElementById('myPropertiesContainer').innerHTML = '<p style="color: var(--text-muted)">Failed to load properties.</p>';
+        }
+    }
+
+    async function fetchRequests(containerId) {
+        try {
+            const res = await fetch(`/api/bookings/my-requests/`, {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (res.status === 401) {
+                logout();
+                return;
+            }
+            if (!res.ok) {
+                throw new Error('Failed to fetch requests');
+            }
+            const data = await res.json();
+            const container = document.getElementById(containerId);
+            
+            if (!Array.isArray(data) || data.length === 0) {
+                container.innerHTML = '<p>No booking requests found.</p>';
+                return;
+            }
+            
+            let html = '';
+            data.forEach(req => {
+                const isOwner = role === 'Owner';
+                let actionBtns = '';
+                
+                if (isOwner && req.status === 'Pending') {
+                    actionBtns = `
+                        <button class="btn" style="padding: 2px 8px; font-size: 0.8rem;" onclick="updateReq(${req.id}, 'Approved')">Approve</button>
+                        <button class="btn btn-secondary" style="padding: 2px 8px; font-size: 0.8rem; background: #ef4444; color: #fff; border:none;" onclick="updateReq(${req.id}, 'Rejected')">Reject</button>
+                    `;
+                }
+                
+                html += `
+                    <div class="list-item">
+                        <div>
+                            <strong>${req.property_details ? req.property_details.title : 'Property'}</strong><br>
+                            <span class="text-muted" style="font-size: 0.85rem">
+                                Seeker: ${req.seeker_name}
+                                ${req.seeker_email ? ` | ${req.seeker_email}` : ''}
+                                ${req.seeker_mobile ? ` | ${req.seeker_mobile}` : ''}
+                            </span>
+                        </div>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <span class="status-badge status-${req.status}">${req.status}</span>
+                            ${actionBtns}
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        } catch (error) {
+            console.error(error);
+            document.getElementById(containerId).innerHTML = '<p style="color: var(--text-muted)">Failed to load requests.</p>';
+        }
+    }
+
+    let selectedImages = [];
+    const MAX_FILE_SIZE = 5 * 1024 * 1024;
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+    function handleImageSelect(files) {
+        const errorDiv = document.getElementById('uploadError');
+        errorDiv.textContent = '';
+        errorDiv.style.display = 'none';
+        
+        for (let file of files) {
+            if (!ALLOWED_TYPES.includes(file.type)) {
+                showError('Invalid format: ' + file.name + '. Use JPG, PNG, or WebP.');
+                continue;
+            }
+            if (file.size > MAX_FILE_SIZE) {
+                showError('File too large: ' + file.name + '. Max 5MB allowed.');
+                continue;
+            }
+            if (selectedImages.length >= 10) {
+                showError('Maximum 10 images allowed.');
+                continue;
+            }
+            selectedImages.push(file);
+        }
+        renderImagePreviews();
+    }
+
+    function showError(msg) {
+        const errorDiv = document.getElementById('uploadError');
+        errorDiv.textContent = msg;
+        errorDiv.style.display = 'block';
+    }
+
+    function renderImagePreviews() {
+        const grid = document.getElementById('imagePreviewGrid');
+        if (selectedImages.length === 0) {
+            grid.innerHTML = '';
+            return;
+        }
+        
+        let html = '';
+        selectedImages.forEach((file, index) => {
+            const url = URL.createObjectURL(file);
+            html += `
+                <div class="preview-item">
+                    <img src="${url}" alt="Preview ${index + 1}">
+                    <button type="button" class="remove-btn" onclick="removeImage(${index})">×</button>
+                    <span class="preview-label">${index + 1}</span>
+                </div>
+            `;
+        });
+        grid.innerHTML = html;
+    }
+
+    function removeImage(index) {
+        URL.revokeObjectURL(selectedImages[index]);
+        selectedImages.splice(index, 1);
+        renderImagePreviews();
+    }
+
+    function closePropertyForm() {
+        selectedImages = [];
+        renderImagePreviews();
+        document.getElementById('addPropertyForm').style.display = 'none';
+        document.getElementById('propertyForm').reset();
+        document.getElementById('uploadError').style.display = 'none';
+    }
+
+    document.getElementById('propertyForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Uploading...';
+        
+        const formData = new FormData();
+        formData.append('title', document.getElementById('p_title').value);
+        formData.append('price', document.getElementById('p_price').value);
+        formData.append('location', document.getElementById('p_location').value);
+        formData.append('room_type', document.getElementById('p_type').value);
+        formData.append('description', document.getElementById('p_desc').value);
+        formData.append('bachelor_allowed', document.getElementById('p_bachelor').checked);
+        
+        for (let image of selectedImages) {
+            formData.append('uploaded_images', image);
+        }
+        
+        try {
+            const res = await fetch('/api/properties/', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + token },
+                body: formData
+            });
+            
+            if (res.ok) {
+                alert('Property added successfully');
+                closePropertyForm();
+                fetchMyProperties();
+            } else {
+                const raw = await res.text();
+                let message = 'Failed to add property';
+
+                try {
+                    const data = JSON.parse(raw);
+                    message = data.error || data.detail || message;
+                } catch (parseError) {
+                    message = res.status >= 500
+                        ? 'Server error while uploading images. Please try again.'
+                        : `Failed to add property (${res.status})`;
+                }
+
+                alert(message);
+            }
+        } catch (err) {
+            alert('Error: ' + err.message);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Save Property';
+        }
+    });
+
+    async function deleteProperty(id) {
+        if (!confirm("Are you sure?")) return;
+        try {
+            const res = await fetch(`/api/properties/${id}/`, {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (res.ok) fetchMyProperties();
+        } catch (err) { }
+    }
+
+    async function updateReq(id, status) {
+        try {
+            const res = await fetch(`/api/bookings/update/${id}/`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify({ status })
+            });
+            if (res.ok) fetchRequests('ownerRequestsContainer');
+        } catch (err) { }
+    }
+</script>
+{% endblock %}

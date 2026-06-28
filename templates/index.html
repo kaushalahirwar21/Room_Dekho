@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<div class="hero fade-slide-up">
+    <h1>Find Rooms Without Brokers in Bhopal</h1>
+    <p>Explore verified rooms in MP Nagar, Arera Colony, Kolar Road and more</p>
+
+    <!-- Trust Badge -->
+    <div class="trust-badge">
+        <div class="trust-item">
+            <div style="font-size: 1.5rem;">🛡️</div>
+            <span style="font-weight: 600; color: white;">100% Broker-Free Guarantee</span>
+        </div>
+        <div class="trust-divider"></div>
+        <div class="trust-item">
+            <div style="font-size: 1.5rem;">✓</div>
+            <span style="font-weight: 600; color: white;">All Listings Verified</span>
+        </div>
+    </div>
+    
+    <div class="search-bar">
+        <input type="text" id="searchLocation" class="search-input" list="locationSuggestions" placeholder="Search in Bhopal..." autocomplete="off">
+        <datalist id="locationSuggestions">
+            <option value="MP Nagar">
+            <option value="Arera Colony">
+            <option value="Kolar Road">
+            <option value="Bawadia Kalan">
+            <option value="Habibganj">
+            <option value="Ayodhya Nagar">
+            <option value="Shahpura">
+            <option value="Chuna Bhatti">
+            <option value="Jatpura">
+        </datalist>
+        <input type="number" id="searchMaxPrice" class="search-input" placeholder="Max Price (₹)">
+        <button class="btn search-btn" onclick="executeSearch()">Search</button>
+    </div>
+</div>
+
+<!-- Why Choose Us -->
+<div class="fade-slide-up">
+    <h2 class="section-title">Why Choose Room Dekho?</h2>
+    <div class="property-grid">
+        <div class="card">
+            <div class="card-body text-center">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">💰</div>
+                <h3 class="card-title">No Brokerage</h3>
+                <p>Connect directly with owners without paying extra fees</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body text-center">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
+                <h3 class="card-title">Verified Listings</h3>
+                <p>Only genuine and updated room listings</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body text-center">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+                <h3 class="card-title">Easy Search</h3>
+                <p>Find rooms quickly using filters and location search</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works -->
+<div class="fade-slide-up">
+    <h2 class="section-title">How It Works</h2>
+    <div class="property-grid">
+        <div class="card">
+            <div class="card-body text-center">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">1️⃣</div>
+                <h3 class="card-title">Search Rooms</h3>
+                <p>Search rooms based on your preferred location and budget</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body text-center">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">2️⃣</div>
+                <h3 class="card-title">View Details</h3>
+                <p>View details, images, and property information</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body text-center">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">3️⃣</div>
+                <h3 class="card-title">Book Directly</h3>
+                <p>Send booking request directly to owner</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Testimonials -->
+<div class="fade-slide-up">
+    <h2 class="section-title">What Our Users Say</h2>
+    <div class="property-grid">
+        <div class="card">
+            <div class="card-body">
+                <div style="font-size: 2rem; margin-bottom: 1rem;">⭐⭐⭐⭐⭐</div>
+                <p style="font-style: italic; margin-bottom: 1rem;">"Found a room in MP Nagar within 2 days. Super helpful!"</p>
+                <p style="font-weight: 600; color: var(--primary);">- Student</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div style="font-size: 2rem; margin-bottom: 1rem;">⭐⭐⭐⭐⭐</div>
+                <p style="font-style: italic; margin-bottom: 1rem;">"Easy and smooth experience. No broker headache."</p>
+                <p style="font-weight: 600; color: var(--primary);">- Working Professional</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Transparency Notice -->
+<div class="fade-slide-up">
+    <div class="card" style="text-align: center; background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(37, 99, 235, 0.05)); border: 1px solid rgba(37, 99, 235, 0.2);">
+        <div class="card-body">
+            <div style="font-size: 2rem; margin-bottom: 1rem;">🛡️</div>
+            <h3 style="color: var(--primary); margin-bottom: 1rem;">100% Transparent Platform</h3>
+            <p style="font-size: 1.1rem; margin-bottom: 1rem;">We connect you directly with property owners. No hidden fees, no brokerage charges.</p>
+            <div class="property-grid">
+                <div>
+                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📞</div>
+                    <strong>Direct Contact</strong>
+                    <p style="font-size: 0.9rem; margin-top: 0.25rem;">Call owners directly</p>
+                </div>
+                <div>
+                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">💰</div>
+                    <strong>No Extra Charges</strong>
+                    <p style="font-size: 0.9rem; margin-top: 0.25rem;">Pay only rent to owner</p>
+                </div>
+                <div>
+                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">✓</div>
+                    <strong>Verified Owners</strong>
+                    <p style="font-size: 0.9rem; margin-top: 0.25rem;">All listings verified</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Listings -->
+<h2 class="section-title">Available Rooms</h2>
+<div class="property-grid" id="propertiesContainer">
+    <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">
+        Loading properties...
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => fetchProperties());
+    
+    function executeSearch() {
+        const location = document.getElementById('searchLocation').value;
+        const maxPrice = document.getElementById('searchMaxPrice').value;
+        
+        let params = [];
+        if (location) params.push('location=' + encodeURIComponent(location));
+        if (maxPrice) params.push('max_price=' + encodeURIComponent(maxPrice));
+        
+        fetchProperties(params.length ? '?' + params.join('&') : '');
+    }
+    
+    async function fetchProperties(query = '') {
+        try {
+            const container = document.getElementById('propertiesContainer');
+            container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);">Loading...</div>';
+            
+            const res = await fetch('/api/properties/' + query);
+            if (!res.ok) {
+                throw new Error(`Failed to load properties (${res.status})`);
+            }
+            const data = await res.json();
+            
+            if (!Array.isArray(data) || data.length === 0) {
+                container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);">No properties found.</div>';
+                return;
+            }
+            
+            let html = '';
+            data.forEach(prop => {
+                const img = prop.first_image || (prop.images && prop.images[0]?.image) || 'https://placehold.co/600x400/e2e8f0/64748b/png?text=No+Image';
+                const badge = prop.bachelor_allowed ? '<span class="badge">Bachelor</span>' : '<span class="badge">Family</span>';
+                const verificationBadge = '<span class="badge" style="background: #2563EB; color: white;">✓ Verified</span>';
+                const contactInfo = prop.owner_name ? `<div class="card-info" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">👤 Owner: ${prop.owner_name}</div>` : '';
+
+                html += `
+                    <div class="card" onclick="window.location.href='/property/${prop.id}'" style="cursor:pointer;">
+                        <img src="${img}" class="card-img" alt="${prop.title}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/e2e8f0/64748b/png?text=Room+Dekho';">
+                        <div class="card-body">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                                <h3 class="card-title" style="margin: 0; flex: 1;">${prop.title}</h3>
+                                ${verificationBadge}
+                            </div>
+                            <div class="card-price" style="font-size: 1.3rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">₹${prop.price}<span style="font-size: 0.9rem; font-weight: 500;">/month</span></div>
+                            <div class="card-info" style="margin-bottom: 0.5rem;">📍 ${prop.location}</div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                ${badge}
+                                <span style="font-size: 0.8rem; color: var(--primary); font-weight: 600;">✓ Direct Owner</span>
+                            </div>
+                            ${contactInfo}
+                            <div style="border-top: 1px solid var(--border); padding-top: 0.5rem; margin-top: 0.5rem;">
+                                <small style="color: var(--text-muted); font-size: 0.75rem;">
+                                    No brokerage fee • Direct payment to owner • Verified listing
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        } catch (err) {
+            console.error(err);
+            document.getElementById('propertiesContainer').innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);">Error loading properties.</div>';
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block title %}Property Details - Room Dekho{% endblock %}
+
+{% block content %}
+<div id="propertyDetailPage">
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-body" id="propertyDetailContainer">
+            <div class="text-center" style="color: var(--text-muted);">Loading property details...</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h3 style="margin-bottom: 1rem;">Contact Owner</h3>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">
+                Send your interest directly to the owner. Your request will appear in the owner's dashboard and an email notification will be sent.
+            </p>
+            <button class="btn" id="requestOwnerBtn" onclick="sendBookingRequest()" disabled>Send Request to Owner</button>
+            <p id="requestStatus" style="margin-top: 1rem; color: var(--text-muted);"></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const propertyId = window.location.pathname.split('/').filter(Boolean).pop();
+    const token = localStorage.getItem('access_token');
+    const role = localStorage.getItem('role');
+    const userId = localStorage.getItem('user_id');
+    let currentProperty = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchPropertyDetails();
+    });
+
+    async function fetchPropertyDetails() {
+        const container = document.getElementById('propertyDetailContainer');
+        const status = document.getElementById('requestStatus');
+
+        try {
+            const res = await fetch(`/api/properties/${propertyId}/`);
+            if (!res.ok) {
+                throw new Error(`Failed to load property (${res.status})`);
+            }
+
+            currentProperty = await res.json();
+            const imageUrls = (currentProperty.images || []).map(img => img.image).filter(Boolean);
+            const heroImage = currentProperty.first_image || imageUrls[0] || 'https://placehold.co/1200x700/e2e8f0/64748b/png?text=Room+Dekho';
+
+            container.innerHTML = `
+                <img src="${heroImage}" alt="${currentProperty.title}" class="card-img" style="max-height: 420px; object-fit: cover;" onerror="this.onerror=null;this.src='https://placehold.co/1200x700/e2e8f0/64748b/png?text=Room+Dekho';">
+                <div style="margin-top: 1.5rem;">
+                    <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap;">
+                        <div>
+                            <h1 style="margin-bottom:0.5rem;">${currentProperty.title}</h1>
+                            <p style="color: var(--text-muted); margin: 0;">${currentProperty.location}</p>
+                        </div>
+                        <div class="card-price" style="font-size: 1.5rem; font-weight: 800; color: var(--primary);">Rs. ${currentProperty.price}/month</div>
+                    </div>
+                    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin:1rem 0;">
+                        <span class="badge">${currentProperty.room_type}</span>
+                        <span class="badge">${currentProperty.bachelor_allowed ? 'Bachelor Allowed' : 'Family Preferred'}</span>
+                        <span class="badge" style="background:#2563EB;color:white;">Direct Owner</span>
+                    </div>
+                    <p style="line-height:1.7;">${currentProperty.description}</p>
+                    <div style="margin-top:1rem;color:var(--text-muted);">
+                        Owner: <strong style="color:var(--text);">${currentProperty.owner_name || 'Room Dekho Owner'}</strong>
+                    </div>
+                </div>
+            `;
+
+            if (imageUrls.length > 1) {
+                container.innerHTML += `
+                    <div style="margin-top: 1.5rem;">
+                        <h3 style="margin-bottom: 1rem;">More Photos</h3>
+                        <div class="property-grid">
+                            ${imageUrls.map((imageUrl, index) => `
+                                <div class="card">
+                                    <img src="${imageUrl}" alt="${currentProperty.title} photo ${index + 1}" class="card-img" style="max-height:220px;object-fit:cover;" onerror="this.onerror=null;this.src='https://placehold.co/600x400/e2e8f0/64748b/png?text=Room+Dekho';">
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            updateRequestButton();
+            status.textContent = '';
+        } catch (error) {
+            container.innerHTML = `<div class="text-center" style="color: var(--text-muted);">${error.message}</div>`;
+            status.textContent = 'Unable to load property details right now.';
+        }
+    }
+
+    function updateRequestButton() {
+        const button = document.getElementById('requestOwnerBtn');
+        const status = document.getElementById('requestStatus');
+
+        if (!currentProperty) {
+            button.disabled = true;
+            return;
+        }
+
+        if (!token) {
+            button.disabled = false;
+            button.textContent = 'Login to Send Request';
+            status.textContent = 'Please log in as a seeker to contact the owner.';
+            return;
+        }
+
+        if (role !== 'Seeker') {
+            button.disabled = true;
+            button.textContent = 'Only Seekers Can Request';
+            status.textContent = 'Please use a seeker account to send a request.';
+            return;
+        }
+
+        if (String(currentProperty.owner) === String(userId)) {
+            button.disabled = true;
+            button.textContent = 'This Is Your Property';
+            status.textContent = 'You cannot send a request to your own listing.';
+            return;
+        }
+
+        button.disabled = false;
+        button.textContent = 'Send Request to Owner';
+    }
+
+    async function sendBookingRequest() {
+        const button = document.getElementById('requestOwnerBtn');
+        const status = document.getElementById('requestStatus');
+
+        if (!token) {
+            window.location.href = '/login/';
+            return;
+        }
+
+        if (role !== 'Seeker') {
+            status.textContent = 'Only seeker accounts can send requests.';
+            return;
+        }
+
+        button.disabled = true;
+        button.textContent = 'Sending...';
+        status.textContent = '';
+
+        try {
+            const res = await fetch('/api/bookings/request/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify({ property: propertyId })
+            });
+
+            const raw = await res.text();
+            let data = {};
+
+            try {
+                data = raw ? JSON.parse(raw) : {};
+            } catch (parseError) {
+                data = {};
+            }
+
+            if (!res.ok) {
+                status.textContent = data.detail || data.error || 'Unable to send your request right now.';
+                button.disabled = false;
+                button.textContent = 'Send Request to Owner';
+                return;
+            }
+
+            status.textContent = 'Request sent successfully. The owner has been notified by email and can see it in the dashboard.';
+            button.textContent = 'Request Sent';
+        } catch (error) {
+            status.textContent = 'Network error while sending the request.';
+            button.disabled = false;
+            button.textContent = 'Send Request to Owner';
+        }
+    }
+</script>
+{% endblock %}

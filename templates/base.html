@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Room Dekho{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=5.2">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+</head>
+<body class="fade-in">
+
+<nav>
+    <a href="{% url 'home' %}" class="brand"><img src="{% static 'images/logo.png' %}" alt="Room Dekho" class="logo"></a>
+    
+    <!-- Hamburger Menu Button (Mobile) -->
+    <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    
+    <div class="nav-links" id="navLinks">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'about' %}">About</a>
+        <button class="theme-toggle-btn" id="themeToggle" aria-label="Toggle theme">🌙</button>
+        <a href="/login" class="btn btn-secondary">Login</a>
+        <a href="/signup" class="btn">Sign Up</a>
+    </div>
+</nav>
+
+<div class="container">
+    {% block content %}{% endblock %}
+</div>
+
+<footer class="footer">
+    <p>© 2026 Room Dekho. All rights reserved.</p>
+    <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.5rem;">We connect you directly with owners - no brokerage fees charged</p>
+</footer>
+
+<script>
+    // Theme Toggle
+    const themeBtn = document.getElementById('themeToggle');
+    const savedTheme = localStorage.getItem('theme');
+    
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        themeBtn.textContent = '☀️';
+    }
+    
+    themeBtn.addEventListener('click', () => {
+        const isDark = document.body.classList.toggle('dark-mode');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        themeBtn.textContent = isDark ? '☀️' : '🌙';
+    });
+    
+    // Hamburger Menu Toggle
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const navLinks = document.getElementById('navLinks');
+    
+    hamburgerBtn.addEventListener('click', () => {
+        const isExpanded = hamburgerBtn.getAttribute('aria-expanded') === 'true';
+        hamburgerBtn.setAttribute('aria-expanded', !isExpanded);
+        hamburgerBtn.classList.toggle('active');
+        navLinks.classList.toggle('active');
+        
+        // Prevent body scroll when menu is open
+        document.body.classList.toggle('nav-open');
+    });
+    
+    // Close menu when clicking on a link inside nav-links (event delegation)
+    navLinks.addEventListener('click', () => {
+        hamburgerBtn.classList.remove('active');
+        navLinks.classList.remove('active');
+        hamburgerBtn.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('nav-open');
+    });
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!hamburgerBtn.contains(e.target) && !navLinks.contains(e.target)) {
+            hamburgerBtn.classList.remove('active');
+            navLinks.classList.remove('active');
+            hamburgerBtn.setAttribute('aria-expanded', 'false');
+            document.body.classList.remove('nav-open');
+        }
+    });
+    
+    // Auth check
+    document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('access_token');
+        const role = localStorage.getItem('role');
+        const navLinksContainer = document.getElementById('navLinks');
+        
+        if (token && navLinksContainer) {
+            // Remove login and signup links if they exist
+            const loginBtn = navLinksContainer.querySelector('a[href="/login"]');
+            const signupBtn = navLinksContainer.querySelector('a[href="/signup"]');
+            if (loginBtn) loginBtn.remove();
+            if (signupBtn) signupBtn.remove();
+            
+            // Add Dashboard / Admin link
+            let dashLink = '';
+            if (role === 'Owner' || role === 'Seeker') {
+                dashLink = '<a href="/dashboard" class="btn btn-secondary">Dashboard</a>';
+            } else if (role === 'Admin') {
+                dashLink = '<a href="/admin/" class="btn btn-secondary">Admin</a>';
+            }
+            
+            if (dashLink) {
+                navLinksContainer.insertAdjacentHTML('beforeend', dashLink);
+            }
+            
+            // Add Logout button
+            navLinksContainer.insertAdjacentHTML('beforeend', ' <button onclick="logout()" class="btn btn-secondary">Logout</button>');
+        }
+    });
+    
+    function logout() {
+        localStorage.clear();
+        window.location.href = '/';
+    }
+</script>
+
+{% block scripts %}{% endblock %}
+<script src="{% static 'js/animations.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About - Room Dekho{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 800px;">
+    <h1 class="text-center text-primary mb-4">About Room Dekho</h1>
+
+    <div class="card mb-4">
+        <div class="card-body text-center">
+            <p style="font-size: 1.2rem; line-height: 1.6;">
+              Room Dekho is a modern rental platform built to simplify the process of finding rooms in cities like Bhopal. It connects property owners directly with people looking for accommodation, removing the need for brokers and extra charges. Users can easily search for rooms based on location and budget, explore detailed listings, and connect with owners in a transparent and hassle-free way. The platform is designed to save time, reduce effort, and provide a smooth room-hunting experience for students, working professionals, and anyone moving to the city.
+
+            </p>
+        </div>
+    </div>
+
+    
+    <div class="card">
+        <div class="card-body text-center">
+            <h2 class="mb-4">Developer Profile</h2>
+
+            <img src="{% static 'images/pro_pic.png' %}" alt="Kaushal Singh" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin: 0 auto 20px; border: 3px solid var(--primary);">
+
+            <h3 style="color: #fff; margin-bottom: 5px;">Kaushal Singh Ahirwar</h3>
+            <p class="text-muted" style="font-size: 1.1rem; margin-bottom: 20px;">
+                B.Tech CSE | Backend Developer | DSA Enthusiast
+            </p>
+
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <a href="https://kaushal-port.netlify.app/" class="btn" target="_blank">Portfolio</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
