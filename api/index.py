@@ -12,12 +12,15 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'root.settings')
 import django
 django.setup()
 
-if os.getenv('VERCEL') and os.getenv('USE_SQLITE', 'False') == 'True':
+if os.getenv('VERCEL'):
     migrate_flag = '/tmp/room-dekho.migrated'
     if not os.path.exists(migrate_flag):
-        call_command('migrate', '--noinput')
-        with open(migrate_flag, 'w', encoding='utf-8') as flag_file:
-            flag_file.write('ok')
+        try:
+            call_command('migrate', '--noinput')
+            with open(migrate_flag, 'w', encoding='utf-8') as flag_file:
+                flag_file.write('ok')
+        except Exception as e:
+            print(f"Auto-migration failed: {str(e)}")
 
 # Export the WSGI application
 application = WSGIHandler()
