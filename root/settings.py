@@ -184,3 +184,10 @@ if not DEBUG:
 # For Vercel deployment, force use of DATABASE_URL if present (Postgres)
 if DATABASE_URL:
     USE_SQLITE = False
+
+# Cloudinary Storage for user-uploaded media files in production (Vercel)
+CLOUDINARY_URL = os.getenv('CLOUDINARY_URL')
+if CLOUDINARY_URL:
+    INSTALLED_APPS.insert(0, 'cloudinary_storage')
+    INSTALLED_APPS.append('cloudinary')
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
