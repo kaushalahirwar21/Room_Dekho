@@ -164,8 +164,13 @@
                         {{ property.owner.name|slice:":1"|upper|default:"O" }}
                     </div>
                     <div class="sidebar-owner-details">
-                        <h4 id="sidebar_owner_name">{{ property.owner.name|default:"Room Dekho Owner" }}</h4>
-                        <span style="color: #059669; display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="badge-check" style="width: 14px; height: 14px; fill: currentColor; color: #ffffff;"></i> Verified Owner</span>
+                        <h4 id="sidebar_owner_name" style="display: inline-flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; margin: 0;">
+                            {{ property.owner.name|default:"Room Dekho Owner" }}
+                            <span class="owner-verified-badge" title="Verified Owner" style="color: var(--primary); display: inline-flex; align-items: center;">
+                                <i data-lucide="badge-check" style="width: 16px; height: 16px; fill: var(--primary); color: #ffffff;"></i>
+                            </span>
+                        </h4>
+                        <span style="color: #059669; display: flex; align-items: center; gap: 0.25rem; font-size: 0.8rem; margin-top: 2px;"><i data-lucide="shield-check" style="width: 14px; height: 14px;"></i> Verified Owner</span>
                     </div>
                 </div>
 
@@ -174,7 +179,7 @@
                     <button class="btn" id="requestOwnerBtn" onclick="sendBookingRequest()" style="width: 100%; border-radius: 12px; height: 48px;" disabled>
                         <i data-lucide="phone" style="width: 18px; height: 18px; margin-right: 8px;"></i> Contact Owner
                     </button>
-                    <button class="btn btn-outline" onclick="toggleSave()" style="width: 100%; border-radius: 12px; height: 48px;">
+                    <button class="btn btn-outline" id="sidebarSaveBtn" onclick="toggleSave()" style="width: 100%; border-radius: 12px; height: 48px;">
                         <i data-lucide="heart" style="width: 18px; height: 18px; margin-right: 8px;"></i> Save to Wishlist
                     </button>
                 </div>
@@ -255,7 +260,8 @@
         const btn = document.getElementById('requestOwnerBtn');
         const status = document.getElementById('requestStatus');
         btn.disabled = true;
-        status.textContent = 'Sending request...';
+        btn.innerHTML = '<span class="loading-spinner" style="width: 16px; height: 16px; border-width: 2px; margin-right: 8px; display: inline-block; vertical-align: middle;"></span> Sending...';
+        status.textContent = '';
 
         try {
             const res = await fetch('/api/bookings/requests/', {
@@ -267,6 +273,17 @@
                 body: JSON.stringify({ property: propertyId })
             });
 
+            if (res.status === 401) {
+                throw new Error("You must be logged in to contact the owner.");
+            } else if (res.status === 403) {
+                const data = await res.json();
+                throw new Error(data.detail || "Only Seekers can contact owners.");
+            } else if (res.status === 404) {
+                throw new Error("Property not found.");
+            } else if (res.status >= 500) {
+                throw new Error("Server error. Please try again later.");
+            }
+
             const data = await res.json();
             if (res.ok) {
                 btn.style.backgroundColor = '#059669';
@@ -276,28 +293,46 @@
                 status.textContent = 'Owner has been notified! They will contact you shortly.';
             } else {
                 btn.disabled = false;
+                btn.innerHTML = '<i data-lucide="phone" style="width: 18px; height: 18px; margin-right: 8px;"></i> Contact Owner';
                 status.style.color = '#EF4444';
                 status.textContent = data.detail || 'Failed to send request.';
             }
             if (typeof lucide !== 'undefined') lucide.createIcons();
         } catch (error) {
             btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="phone" style="width: 18px; height: 18px; margin-right: 8px;"></i> Contact Owner';
             status.style.color = '#EF4444';
-            status.textContent = 'Network error. Please try again.';
+            status.textContent = error.message || 'Network error. Please try again.';
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
     }
 
     function toggleSave() {
-        const btn = document.querySelector('.card-save-btn');
-        btn.classList.toggle('saved');
-        const icon = btn.querySelector('svg');
-        if (btn.classList.contains('saved')) {
-            icon.style.fill = '#EF4444';
-            icon.style.color = '#EF4444';
+        const titleBtn = document.querySelector('.details-title-row .card-save-btn');
+        const sidebarBtn = document.getElementById('sidebarSaveBtn');
+        
+        const isSaved = titleBtn.classList.toggle('saved');
+        sidebarBtn.classList.toggle('saved');
+        
+        // Sync icons
+        const titleIcon = titleBtn.querySelector('svg');
+        const sidebarIcon = sidebarBtn.querySelector('svg');
+        
+        if (isSaved) {
+            titleIcon.style.fill = '#EF4444';
+            titleIcon.style.color = '#EF4444';
+            sidebarIcon.style.fill = '#EF4444';
+            sidebarIcon.style.color = '#EF4444';
+            sidebarBtn.innerHTML = '<i data-lucide="heart" style="width: 18px; height: 18px; margin-right: 8px; fill: #EF4444; color: #EF4444;"></i> Saved to Wishlist';
         } else {
-            icon.style.fill = 'none';
-            icon.style.color = 'currentColor';
+            titleIcon.style.fill = 'none';
+            titleIcon.style.color = 'currentColor';
+            sidebarIcon.style.fill = 'none';
+            sidebarIcon.style.color = 'currentColor';
+            sidebarBtn.innerHTML = '<i data-lucide="heart" style="width: 18px; height: 18px; margin-right: 8px;"></i> Save to Wishlist';
         }
+        
+        if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 </script>
 {% endblock %}

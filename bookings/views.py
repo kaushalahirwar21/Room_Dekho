@@ -56,36 +56,25 @@ class UpdateBookingRequestView(generics.UpdateAPIView):
 
 
 def notify_owner_about_booking_request(booking_request):
-    owner = booking_request.property.owner
-    seeker = booking_request.user
+    try:
+        owner = booking_request.property.owner
+        seeker = booking_request.user
 
-    if not owner.email:
-        return
+        if not owner.email:
+            return
 
-    subject = f"New booking request for {booking_request.property.title}"
-    message = (
-        f"Hello {owner.name},\n\n"
-        f"You have received a new booking request on Room Dekho.\n\n"
-        f"Property: {booking_request.property.title}\n"
-        f"Location: {booking_request.property.location}\n"
-        f"Price: Rs. {booking_request.property.price}/month\n\n"
-        f"Seeker details:\n"
-        f"Name: {seeker.name}\n"
-        f"Email: {seeker.email}\n"
-        f"Mobile: {seeker.mobile_number or 'Not provided'}\n\n"
-        f"Please log in to your dashboard to review this request.\n\n"
-        f"Thank you,\n"
-        f"Room Dekho Team"
-    )
-
-    from accounts.email_service import EmailService
-    EmailService.send_booking_notification(
-        owner_email=owner.email,
-        owner_name=owner.name,
-        seeker_name=seeker.name,
-        seeker_email=seeker.email,
-        seeker_mobile=seeker.mobile_number or 'Not provided',
-        property_title=booking_request.property.title,
-        property_location=booking_request.property.location,
-        property_price=booking_request.property.price
-    )
+        from accounts.email_service import EmailService
+        EmailService.send_booking_notification(
+            owner_email=owner.email,
+            owner_name=owner.name,
+            seeker_name=seeker.name,
+            seeker_email=seeker.email,
+            seeker_mobile=seeker.mobile_number or 'Not provided',
+            property_title=booking_request.property.title,
+            property_location=booking_request.property.location,
+            property_price=booking_request.property.price
+        )
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Failed to send booking notification email: {str(e)}")
