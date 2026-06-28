@@ -1559,6 +1559,28 @@ nav {
     .nav-links .btn-secondary {
         margin-top: 0.5rem;
     }
+
+    /* Force mobile drawer links and buttons to be dark/visible regardless of transparent navbar state */
+    nav.nav-transparent .nav-links a {
+        color: var(--text-main) !important;
+    }
+    nav.nav-transparent .nav-links a:hover {
+        color: var(--primary) !important;
+    }
+    nav.nav-transparent .nav-links .btn-outline {
+        border-color: var(--border) !important;
+        color: var(--text-main) !important;
+        background-color: transparent !important;
+    }
+    nav.nav-transparent .nav-links .btn-outline:hover {
+        background-color: var(--border-light) !important;
+        border-color: var(--text-muted) !important;
+    }
+    
+    /* Ensure the active hamburger icon (X) is always dark/visible over the white mobile drawer */
+    .hamburger.active span {
+        background-color: var(--text-main) !important;
+    }
 }
 
 /* Utilities */
