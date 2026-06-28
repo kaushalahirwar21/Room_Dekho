@@ -1,38 +1,78 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}About - Room Dekho{% endblock %}
+{% block title %}About Us - Room Dekho{% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 800px;">
-    <h1 class="text-center text-primary mb-4">About Room Dekho</h1>
-
-    <div class="card mb-4">
-        <div class="card-body text-center">
-            <p style="font-size: 1.2rem; line-height: 1.6;">
-              Room Dekho is a modern rental platform built to simplify the process of finding rooms in cities like Bhopal. It connects property owners directly with people looking for accommodation, removing the need for brokers and extra charges. Users can easily search for rooms based on location and budget, explore detailed listings, and connect with owners in a transparent and hassle-free way. The platform is designed to save time, reduce effort, and provide a smooth room-hunting experience for students, working professionals, and anyone moving to the city.
-
-            </p>
-        </div>
+<div class="container fade-in" style="padding-top: 2rem; padding-bottom: 2rem;">
+    <!-- Hero Section -->
+    <div class="text-center" style="max-width: 800px; margin: 4rem auto 4.5rem;">
+        <div class="hero-badge">About Us</div>
+        <h1 style="font-size: 3.25rem; font-weight: 800; margin-bottom: 1.5rem; letter-spacing: -0.025em; line-height: 1.15;">About Room Dekho</h1>
+        <p style="font-size: 1.2rem; color: var(--text-muted); line-height: 1.65; font-weight: 500;">
+            Room Dekho is a room rental platform that helps people find verified rooms, flats, hostels, and PGs directly from property owners without paying brokerage. Our mission is to make room searching simple, transparent, and hassle-free.
+        </p>
     </div>
 
-    
-    <div class="card">
-        <div class="card-body text-center">
-            <h2 class="mb-4">Developer Profile</h2>
+    <!-- Our Mission -->
+    <div class="why-card" style="max-width: 760px; margin: 0 auto 5rem; text-align: center; align-items: center; padding: 3.5rem 2.5rem; border-radius: 20px;">
+        <div class="why-icon-box" style="width: 56px; height: 56px; border-radius: 14px; margin-bottom: 1.25rem;">
+            <i data-lucide="target" style="width: 28px; height: 28px;"></i>
+        </div>
+        <h2 style="font-size: 1.85rem; font-weight: 800; color: var(--text-main); margin-bottom: 1rem; letter-spacing: -0.02em;">Our Mission</h2>
+        <p style="font-size: 1.05rem; color: var(--text-muted); max-width: 600px; line-height: 1.65; font-weight: 500;">
+            To connect tenants with property owners through a secure and easy-to-use platform while eliminating unnecessary brokerage fees and making room hunting faster.
+        </p>
+    </div>
 
-            <img src="{% static 'images/pro_pic.png' %}" alt="Kaushal Singh" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin: 0 auto 20px; border: 3px solid var(--primary);">
-
-            <h3 style="color: #fff; margin-bottom: 5px;">Kaushal Singh Ahirwar</h3>
-            <p class="text-muted" style="font-size: 1.1rem; margin-bottom: 20px;">
-                B.Tech CSE | Backend Developer | DSA Enthusiast
-            </p>
-
-            <div style="display: flex; gap: 15px; justify-content: center;">
-                <a href="https://kaushal-port.netlify.app/" class="btn" target="_blank">Portfolio</a>
+    <!-- Why Choose Room Dekho -->
+    <div style="margin-bottom: 5.5rem; text-align: center;">
+        <h2 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 3rem; letter-spacing: -0.02em; color: var(--text-main);">Why Choose Room Dekho</h2>
+        <div class="why-grid">
+            <div class="why-card" style="transition: all var(--transition-normal); border-radius: 20px; padding: 2.5rem 2rem;">
+                <div class="why-icon-box" style="width: 48px; height: 48px; border-radius: 12px; margin-bottom: 0.5rem;">
+                    <i data-lucide="shield-check" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.75rem;">Verified Listings</h3>
+                <p style="font-size: 0.95rem; line-height: 1.6; color: var(--text-muted);">Every room listing is carefully verified to ensure the images, location, and details match reality.</p>
+            </div>
+            <div class="why-card" style="transition: all var(--transition-normal); border-radius: 20px; padding: 2.5rem 2rem;">
+                <div class="why-icon-box" style="width: 48px; height: 48px; border-radius: 12px; margin-bottom: 0.5rem;">
+                    <i data-lucide="badge-percent" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.75rem;">No Brokerage</h3>
+                <p style="font-size: 0.95rem; line-height: 1.6; color: var(--text-muted);">Say goodbye to heavy broker fees. Talk directly to the owner and save your hard-earned money.</p>
+            </div>
+            <div class="why-card" style="transition: all var(--transition-normal); border-radius: 20px; padding: 2.5rem 2rem;">
+                <div class="why-icon-box" style="width: 48px; height: 48px; border-radius: 12px; margin-bottom: 0.5rem;">
+                    <i data-lucide="phone-call" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.75rem;">Direct Owner Contact</h3>
+                <p style="font-size: 0.95rem; line-height: 1.6; color: var(--text-muted);">Instantly get the owner's mobile number and start negotiating or book a physical room visit.</p>
             </div>
         </div>
     </div>
 
+    <!-- Meet the Developer -->
+    <div class="why-card" style="max-width: 680px; margin: 0 auto 6rem; text-align: center; align-items: center; padding: 4rem 2.5rem; border-radius: 24px;">
+        <div style="position: relative; margin-bottom: 1.5rem;">
+            <img src="{% static 'images/pro_pic.png' %}" alt="Kaushal Singh Ahirwar" onerror="this.onerror=null;this.src='https://placehold.co/150x150/eff6ff/2563eb/png?text=KS';" style="width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 4px solid var(--primary); box-shadow: var(--shadow-md);">
+        </div>
+        <h2 style="font-size: 1.85rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.25rem; letter-spacing: -0.02em;">Kaushal Singh Ahirwar</h2>
+        <span class="badge" style="background-color: var(--primary-light); color: var(--primary); margin-bottom: 1.75rem; font-size: 0.8rem; padding: 0.35rem 1rem; border-color: rgba(37, 99, 235, 0.1);">Founder & Lead Developer</span>
+        
+        <p style="font-size: 1.05rem; color: var(--text-muted); line-height: 1.65; margin-bottom: 2.25rem; max-width: 520px; font-weight: 500;">
+            I am a Computer Science graduate passionate about building modern web applications that solve real-world problems. Room Dekho was created to simplify the room rental process and provide a trustworthy experience for both tenants and property owners.
+        </p>
+        
+        <div style="display: flex; gap: 1.25rem; justify-content: center; width: 100%; max-width: 440px;">
+            <a href="https://kaushal-port.netlify.app/" class="btn" target="_blank" style="flex: 1; height: 44px; border-radius: 100px; font-size: 0.9rem;">
+                <i data-lucide="globe" style="width: 16px; height: 16px; margin-right: 6px; display: inline; vertical-align: middle;"></i> View Portfolio
+            </a>
+            <a href="https://www.linkedin.com/in/kaushal-singh-ahirwar" class="btn btn-outline" target="_blank" style="flex: 1; height: 44px; border-radius: 100px; font-size: 0.9rem;">
+                <i data-lucide="linkedin" style="width: 16px; height: 16px; margin-right: 6px; display: inline; vertical-align: middle;"></i> LinkedIn
+            </a>
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -77,3 +77,10 @@ class AdminDeletePropertyView(APIView):
             return Response({"message": "Property deleted successfully."}, status=status.HTTP_200_OK)
         except Property.DoesNotExist:
             return Response({"error": "Property not found."}, status=status.HTTP_404_NOT_FOUND)
+
+from django.views.generic import DetailView
+
+class PropertyWebDetailView(DetailView):
+    model = Property
+    template_name = 'property_detail.html'
+    context_object_name = 'property'

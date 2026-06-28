@@ -1,23 +1,186 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Property Details - Room Dekho{% endblock %}
+{% block title %}{{ property.title }} | Room Dekho{% endblock %}
+{% block meta_description %}{{ property.description|truncatewords:25 }}{% endblock %}
+
+{% block og_title %}{{ property.title }} | Room Dekho{% endblock %}
+{% block og_description %}{{ property.description|truncatewords:25 }}{% endblock %}
+{% block og_image %}
+{% if property.images.all %}{{ request.scheme }}://{{ request.get_host }}{% if property.images.all.0.image %}{{ property.images.all.0.image.url }}{% endif %}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo.png' %}{% endif %}
+{% endblock %}
+
+{% block twitter_title %}{{ property.title }} | Room Dekho{% endblock %}
+{% block twitter_description %}{{ property.description|truncatewords:25 }}{% endblock %}
+{% block twitter_image %}
+{% if property.images.all %}{{ request.scheme }}://{{ request.get_host }}{% if property.images.all.0.image %}{{ property.images.all.0.image.url }}{% endif %}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo.png' %}{% endif %}
+{% endblock %}
 
 {% block content %}
-<div id="propertyDetailPage">
-    <div class="card" style="margin-bottom: 2rem;">
-        <div class="card-body" id="propertyDetailContainer">
-            <div class="text-center" style="color: var(--text-muted);">Loading property details...</div>
-        </div>
+<!-- Schema.org Structured Data for Real Estate Listing -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SingleFamilyResidence",
+  "name": "{{ property.title|escapejs }}",
+  "description": "{{ property.description|escapejs }}",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "{{ property.location|escapejs }}",
+    "addressRegion": "Madhya Pradesh",
+    "addressCountry": "IN"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "{{ property.price }}",
+    "priceCurrency": "INR",
+    "priceSpecification": {
+      "@type": "UnitPriceSpecification",
+      "price": "{{ property.price }}",
+      "priceCurrency": "INR",
+      "referenceQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 1,
+        "unitCode": "MON"
+      }
+    }
+  }
+}
+</script>
+
+<!-- Breadcrumb Navigation for SEO -->
+<div class="container" style="margin-top: 2rem; margin-bottom: 1rem;">
+    <nav aria-label="Breadcrumb" style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">
+        <ol style="display: flex; gap: 0.5rem; list-style: none; padding: 0; margin: 0;">
+            <li><a href="{% url 'home' %}" style="color: var(--text-muted); text-decoration: none;">Home</a></li>
+            <li><span style="margin: 0 0.25rem;">/</span></li>
+            <li><a href="{% url 'home' %}#listings" style="color: var(--text-muted); text-decoration: none;">Rooms</a></li>
+            <li><span style="margin: 0 0.25rem;">/</span></li>
+            <li aria-current="page" style="color: var(--primary);">{{ property.title|truncatechars:30 }}</li>
+        </ol>
+    </nav>
+</div>
+
+<div id="propertyDetailPage" class="container fade-in" style="padding-top: 0; padding-bottom: 4rem;">
+    <!-- Back to Search Link -->
+    <div style="margin-bottom: 1.5rem;">
+        <a href="{% url 'home' %}" style="color: var(--text-muted); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.95rem;">
+            <i data-lucide="arrow-left" style="width: 18px; height: 18px;"></i> Back to Search
+        </a>
     </div>
 
-    <div class="card">
-        <div class="card-body">
-            <h3 style="margin-bottom: 1rem;">Contact Owner</h3>
-            <p style="color: var(--text-muted); margin-bottom: 1rem;">
-                Send your interest directly to the owner. Your request will appear in the owner's dashboard and an email notification will be sent.
-            </p>
-            <button class="btn" id="requestOwnerBtn" onclick="sendBookingRequest()" disabled>Send Request to Owner</button>
-            <p id="requestStatus" style="margin-top: 1rem; color: var(--text-muted);"></p>
+    <!-- Details Split Layout -->
+    <div class="details-layout">
+        <!-- Left Side: Gallery & Description -->
+        <div class="details-left-side">
+            <!-- Gallery -->
+            <div class="gallery-container" id="galleryContainer">
+                <div class="gallery-main" id="mainGalleryImageWrapper">
+                    <img src="{% if property.images.all %}{{ property.images.all.0.image.url }}{% else %}https://placehold.co/1200x700/eff6ff/2563eb/png?text=Room+Dekho{% endif %}" id="mainGalleryImage" alt="{{ property.title }}" onerror="this.onerror=null;this.src='https://placehold.co/1200x700/f1f5f9/94a3b8/png?text=Room+Dekho';">
+                </div>
+                {% if property.images.all.count > 1 %}
+                <div class="gallery-thumbnails" id="galleryThumbnails">
+                    {% for img in property.images.all %}
+                    <div class="gallery-thumbnail {% if forloop.first %}active{% endif %}" onclick="changeMainImage('{{ img.image.url }}', this)">
+                        <img src="{{ img.image.url }}" alt="{{ property.title }} - Thumbnail {{ forloop.counter }}">
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Main Info Card -->
+            <div class="details-main-content">
+                <div class="details-header">
+                    <div class="details-title-row">
+                        <h1 id="p_title">{{ property.title }}</h1>
+                        <button class="card-save-btn" style="position: static; width: 44px; height: 44px;" onclick="toggleSave()" aria-label="Save to Wishlist">
+                            <i data-lucide="heart" style="width: 20px; height: 20px;"></i>
+                        </button>
+                    </div>
+                    
+                    <div id="p_location_row" class="card-location" style="font-size: 1.05rem; margin-bottom: 1rem;">
+                        <i data-lucide="map-pin" style="width: 18px; height: 18px;"></i>
+                        <span id="p_location">{{ property.location }}</span>
+                    </div>
+
+                    <div class="card-badges" id="p_badges" style="margin-top: 1rem;">
+                        <span class="badge">{{ property.room_type }}</span>
+                        <span class="badge">{% if property.bachelor_allowed %}Bachelors Allowed{% else %}Family Only{% endif %}</span>
+                        <span class="badge" style="background-color: #D1FAE5; color: #059669; border-color: rgba(5, 150, 105, 0.2);"><i data-lucide="shield-check" style="width: 13px; height: 13px; display: inline; vertical-align: middle; margin-right: 4px;"></i> Verified Listing</span>
+                    </div>
+                </div>
+
+                <!-- Specifications Grid -->
+                <div class="specs-grid" id="p_specs">
+                    <div class="spec-box">
+                        <span class="spec-box-label"><i data-lucide="layers" style="width: 14px; height: 14px; display: inline; vertical-align: middle; margin-right: 4px;"></i> Floor</span>
+                        <span class="spec-box-value" id="spec_floor">{{ property.floor|default:"N/A" }}</span>
+                    </div>
+                    <div class="spec-box">
+                        <span class="spec-box-label"><i data-lucide="maximize" style="width: 14px; height: 14px; display: inline; vertical-align: middle; margin-right: 4px;"></i> Room Size</span>
+                        <span class="spec-box-value" id="spec_size">{{ property.room_size|default:"N/A" }}</span>
+                    </div>
+                    <div class="spec-box">
+                        <span class="spec-box-label"><i data-lucide="bath" style="width: 14px; height: 14px; display: inline; vertical-align: middle; margin-right: 4px;"></i> Bathroom</span>
+                        <span class="spec-box-value" id="spec_bathroom">{{ property.bathroom|default:"N/A" }}</span>
+                    </div>
+                    <div class="spec-box">
+                        <span class="spec-box-label"><i data-lucide="armchair" style="width: 14px; height: 14px; display: inline; vertical-align: middle; margin-right: 4px;"></i> Furnishing</span>
+                        <span class="spec-box-value" id="spec_furnishing">{{ property.furnishing|default:"N/A" }}</span>
+                    </div>
+                    <div class="spec-box">
+                        <span class="spec-box-label"><i data-lucide="bike" style="width: 14px; height: 14px; display: inline; vertical-align: middle; margin-right: 4px;"></i> Parking</span>
+                        <span class="spec-box-value" id="spec_parking">{{ property.parking|default:"N/A" }}</span>
+                    </div>
+                    <div class="spec-box">
+                        <span class="spec-box-label"><i data-lucide="calendar" style="width: 14px; height: 14px; display: inline; vertical-align: middle; margin-right: 4px;"></i> Available From</span>
+                        <span class="spec-box-value" id="spec_available">{{ property.available_from|default:"N/A" }}</span>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="details-description">
+                    <h3>About this property</h3>
+                    <p id="p_description">{{ property.description }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Sticky Contact Sidebar -->
+        <div class="details-right-side">
+            <div class="details-sidebar-card">
+                <div>
+                    <span class="text-muted" style="font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Monthly Rent</span>
+                    <div class="sidebar-price-row">
+                        <div class="sidebar-price-tag" id="sidebar_price">₹{{ property.price }}<span style="font-size: 1rem; font-weight: 500; color: var(--text-muted);">/month</span></div>
+                        <span class="badge" style="background-color: var(--primary-light); color: var(--primary);">No Deposit</span>
+                    </div>
+                </div>
+
+                <!-- Owner Profile -->
+                <div class="sidebar-owner-profile">
+                    <div id="sidebar_owner_avatar" class="card-owner-avatar" style="width: 48px; height: 48px; border-radius: 50%; font-size: 1.2rem;">
+                        {{ property.owner.name|slice:":1"|upper|default:"O" }}
+                    </div>
+                    <div class="sidebar-owner-details">
+                        <h4 id="sidebar_owner_name">{{ property.owner.name|default:"Room Dekho Owner" }}</h4>
+                        <span style="color: #059669; display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="badge-check" style="width: 14px; height: 14px; fill: currentColor; color: #ffffff;"></i> Verified Owner</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <button class="btn" id="requestOwnerBtn" onclick="sendBookingRequest()" style="width: 100%; border-radius: 12px; height: 48px;" disabled>
+                        <i data-lucide="phone" style="width: 18px; height: 18px; margin-right: 8px;"></i> Contact Owner
+                    </button>
+                    <button class="btn btn-outline" onclick="toggleSave()" style="width: 100%; border-radius: 12px; height: 48px;">
+                        <i data-lucide="heart" style="width: 18px; height: 18px; margin-right: 8px;"></i> Save to Wishlist
+                    </button>
+                </div>
+                
+                <p id="requestStatus" class="text-center" style="font-size: 0.85rem; color: var(--text-muted); margin: 0;"></p>
+            </div>
         </div>
     </div>
 </div>
@@ -25,159 +188,115 @@
 
 {% block scripts %}
 <script>
-    const propertyId = window.location.pathname.split('/').filter(Boolean).pop();
+    const propertyId = "{{ property.id }}";
     const token = localStorage.getItem('access_token');
     const role = localStorage.getItem('role');
     const userId = localStorage.getItem('user_id');
-    let currentProperty = null;
 
     document.addEventListener('DOMContentLoaded', () => {
-        fetchPropertyDetails();
+        updateRequestButton();
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
     });
 
-    async function fetchPropertyDetails() {
-        const container = document.getElementById('propertyDetailContainer');
-        const status = document.getElementById('requestStatus');
-
-        try {
-            const res = await fetch(`/api/properties/${propertyId}/`);
-            if (!res.ok) {
-                throw new Error(`Failed to load property (${res.status})`);
-            }
-
-            currentProperty = await res.json();
-            const imageUrls = (currentProperty.images || []).map(img => img.image).filter(Boolean);
-            const heroImage = currentProperty.first_image || imageUrls[0] || 'https://placehold.co/1200x700/e2e8f0/64748b/png?text=Room+Dekho';
-
-            container.innerHTML = `
-                <img src="${heroImage}" alt="${currentProperty.title}" class="card-img" style="max-height: 420px; object-fit: cover;" onerror="this.onerror=null;this.src='https://placehold.co/1200x700/e2e8f0/64748b/png?text=Room+Dekho';">
-                <div style="margin-top: 1.5rem;">
-                    <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap;">
-                        <div>
-                            <h1 style="margin-bottom:0.5rem;">${currentProperty.title}</h1>
-                            <p style="color: var(--text-muted); margin: 0;">${currentProperty.location}</p>
-                        </div>
-                        <div class="card-price" style="font-size: 1.5rem; font-weight: 800; color: var(--primary);">Rs. ${currentProperty.price}/month</div>
-                    </div>
-                    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin:1rem 0;">
-                        <span class="badge">${currentProperty.room_type}</span>
-                        <span class="badge">${currentProperty.bachelor_allowed ? 'Bachelor Allowed' : 'Family Preferred'}</span>
-                        <span class="badge" style="background:#2563EB;color:white;">Direct Owner</span>
-                    </div>
-                    <p style="line-height:1.7;">${currentProperty.description}</p>
-                    <div style="margin-top:1rem;color:var(--text-muted);">
-                        Owner: <strong style="color:var(--text);">${currentProperty.owner_name || 'Room Dekho Owner'}</strong>
-                    </div>
-                </div>
-            `;
-
-            if (imageUrls.length > 1) {
-                container.innerHTML += `
-                    <div style="margin-top: 1.5rem;">
-                        <h3 style="margin-bottom: 1rem;">More Photos</h3>
-                        <div class="property-grid">
-                            ${imageUrls.map((imageUrl, index) => `
-                                <div class="card">
-                                    <img src="${imageUrl}" alt="${currentProperty.title} photo ${index + 1}" class="card-img" style="max-height:220px;object-fit:cover;" onerror="this.onerror=null;this.src='https://placehold.co/600x400/e2e8f0/64748b/png?text=Room+Dekho';">
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            }
-
-            updateRequestButton();
-            status.textContent = '';
-        } catch (error) {
-            container.innerHTML = `<div class="text-center" style="color: var(--text-muted);">${error.message}</div>`;
-            status.textContent = 'Unable to load property details right now.';
-        }
+    function changeMainImage(url, thumb) {
+        document.getElementById('mainGalleryImage').src = url;
+        document.querySelectorAll('.gallery-thumbnail').forEach(t => t.classList.remove('active'));
+        thumb.classList.add('active');
     }
 
-    function updateRequestButton() {
-        const button = document.getElementById('requestOwnerBtn');
+    async function updateRequestButton() {
+        const btn = document.getElementById('requestOwnerBtn');
         const status = document.getElementById('requestStatus');
 
-        if (!currentProperty) {
-            button.disabled = true;
-            return;
-        }
-
         if (!token) {
-            button.disabled = false;
-            button.textContent = 'Login to Send Request';
-            status.textContent = 'Please log in as a seeker to contact the owner.';
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="log-in" style="width: 18px; height: 18px; margin-right: 8px;"></i> Login to Contact Owner';
+            if (typeof lucide !== 'undefined') lucide.createIcons();
             return;
         }
 
-        if (role !== 'Seeker') {
-            button.disabled = true;
-            button.textContent = 'Only Seekers Can Request';
-            status.textContent = 'Please use a seeker account to send a request.';
+        if (role === 'Owner') {
+            btn.disabled = true;
+            status.textContent = 'Owners cannot request bookings.';
             return;
         }
 
-        if (String(currentProperty.owner) === String(userId)) {
-            button.disabled = true;
-            button.textContent = 'This Is Your Property';
-            status.textContent = 'You cannot send a request to your own listing.';
-            return;
+        try {
+            const res = await fetch(`/api/bookings/my-requests/?property_id=${propertyId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const requests = await res.json();
+                if (requests.length > 0) {
+                    const req = requests[0];
+                    btn.disabled = true;
+                    btn.className = 'btn';
+                    btn.style.backgroundColor = '#059669';
+                    btn.style.color = '#ffffff';
+                    btn.innerHTML = `<i data-lucide="check-circle" style="width: 18px; height: 18px; margin-right: 8px;"></i> Request Sent (${req.status})`;
+                } else {
+                    btn.disabled = false;
+                }
+            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        } catch (error) {
+            console.error(error);
         }
-
-        button.disabled = false;
-        button.textContent = 'Send Request to Owner';
     }
 
     async function sendBookingRequest() {
-        const button = document.getElementById('requestOwnerBtn');
-        const status = document.getElementById('requestStatus');
-
         if (!token) {
             window.location.href = '/login/';
             return;
         }
 
-        if (role !== 'Seeker') {
-            status.textContent = 'Only seeker accounts can send requests.';
-            return;
-        }
-
-        button.disabled = true;
-        button.textContent = 'Sending...';
-        status.textContent = '';
+        const btn = document.getElementById('requestOwnerBtn');
+        const status = document.getElementById('requestStatus');
+        btn.disabled = true;
+        status.textContent = 'Sending request...';
 
         try {
-            const res = await fetch('/api/bookings/request/', {
+            const res = await fetch('/api/bookings/requests/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + token
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({ property: propertyId })
             });
 
-            const raw = await res.text();
-            let data = {};
-
-            try {
-                data = raw ? JSON.parse(raw) : {};
-            } catch (parseError) {
-                data = {};
+            const data = await res.json();
+            if (res.ok) {
+                btn.style.backgroundColor = '#059669';
+                btn.style.color = '#ffffff';
+                btn.innerHTML = '<i data-lucide="check-circle" style="width: 18px; height: 18px; margin-right: 8px;"></i> Request Sent (Pending)';
+                status.style.color = '#059669';
+                status.textContent = 'Owner has been notified! They will contact you shortly.';
+            } else {
+                btn.disabled = false;
+                status.style.color = '#EF4444';
+                status.textContent = data.detail || 'Failed to send request.';
             }
-
-            if (!res.ok) {
-                status.textContent = data.detail || data.error || 'Unable to send your request right now.';
-                button.disabled = false;
-                button.textContent = 'Send Request to Owner';
-                return;
-            }
-
-            status.textContent = 'Request sent successfully. The owner has been notified by email and can see it in the dashboard.';
-            button.textContent = 'Request Sent';
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         } catch (error) {
-            status.textContent = 'Network error while sending the request.';
-            button.disabled = false;
-            button.textContent = 'Send Request to Owner';
+            btn.disabled = false;
+            status.style.color = '#EF4444';
+            status.textContent = 'Network error. Please try again.';
+        }
+    }
+
+    function toggleSave() {
+        const btn = document.querySelector('.card-save-btn');
+        btn.classList.toggle('saved');
+        const icon = btn.querySelector('svg');
+        if (btn.classList.contains('saved')) {
+            icon.style.fill = '#EF4444';
+            icon.style.color = '#EF4444';
+        } else {
+            icon.style.fill = 'none';
+            icon.style.color = 'currentColor';
         }
     }
 </script>

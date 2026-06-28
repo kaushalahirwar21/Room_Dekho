@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Privacy Policy | Room Dekho{% endblock %}
+{% block meta_description %}Read the Privacy Policy of Room Dekho to understand how we collect, use, and protect your personal information on our platform.{% endblock %}
+
+{% block content %}
+<div class="container fade-in" style="padding-top: 4rem; padding-bottom: 6rem; max-width: 800px;">
+    <h1 style="font-size: 2.75rem; font-weight: 800; margin-bottom: 1.5rem; color: var(--text-main); letter-spacing: -0.025em; line-height: 1.2;">Privacy Policy</h1>
+    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2.5rem;">Last Updated: June 29, 2026</p>
+
+    <div style="display: flex; flex-direction: column; gap: 2rem; line-height: 1.7; font-size: 1.05rem; color: var(--text-main); font-weight: 500;">
+        <section>
+            <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-main);">1. Information We Collect</h2>
+            <p style="color: var(--text-muted); margin-bottom: 0.75rem;">We collect information you provide directly to us when registering an account, listing a room, or contacting another user. This includes:</p>
+            <ul style="color: var(--text-muted); padding-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; list-style-type: disc;">
+                <li>Name, email address, and phone number.</li>
+                <li>Account credentials (hashed securely).</li>
+                <li>Property details, specifications, rent, and images.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-main);">2. How We Use Your Information</h2>
+            <p style="color: var(--text-muted); margin-bottom: 0.75rem;">We use the information we collect to operate, maintain, and improve the Room Dekho platform, including to:</p>
+            <ul style="color: var(--text-muted); padding-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; list-style-type: disc;">
+                <li>Facilitate broker-free connections between owners and tenants.</li>
+                <li>Send OTP codes for registration, login, and password resets.</li>
+                <li>Verify listings and prevent fraudulent activities.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-main);">3. Data Protection</h2>
+            <p style="color: var(--text-muted);">We implement industry-standard security measures to safeguard your personal data. Emojis, scripts, and HTML tags are sanitized on input, and passwords are encrypted using strong hashing algorithms.</p>
+        </section>
+
+        <section>
+            <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-main);">4. Contact Us</h2>
+            <p style="color: var(--text-muted);">If you have any questions or concerns about this Privacy Policy, please reach out to us at <a href="mailto:support@roomdekho.com" style="color: var(--primary); text-decoration: none; font-weight: 600;">support@roomdekho.com</a>.</p>
+        </section>
+    </div>
+</div>
+{% endblock %}

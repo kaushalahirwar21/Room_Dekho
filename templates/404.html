@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Page Not Found | Room Dekho{% endblock %}
+
+{% block content %}
+<div class="container text-center fade-in" style="padding: 8rem 2rem 10rem; max-width: 600px; margin: 0 auto;">
+    <div style="font-size: 6rem; font-weight: 850; color: var(--primary); line-height: 1; margin-bottom: 1.5rem; letter-spacing: -0.05em;">404</div>
+    <h1 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 1rem; color: var(--text-main); letter-spacing: -0.02em;">Oops! Page Not Found</h1>
+    <p style="font-size: 1.1rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 2.5rem; font-weight: 500;">
+        We can't seem to find the page you're looking for. It might have been moved, deleted, or the URL might be incorrect.
+    </p>
+    <a href="{% url 'home' %}" class="btn" style="border-radius: 100px; padding: 0.8rem 2.5rem; font-weight: 700; box-shadow: var(--shadow-md);">
+        Back to Homepage
+    </a>
+</div>
+{% endblock %}

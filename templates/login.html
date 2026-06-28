@@ -1,4 +1,8 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login | Room Dekho{% endblock %}
+{% block meta_description %}Log in to your Room Dekho account to manage your room listings, view inquiries, or contact property owners.{% endblock %}
 
 {% block content %}
 <div class="form-container">
@@ -11,9 +15,17 @@
             <label>Email</label>
             <input type="email" id="email" class="form-control" required>
         </div>
-        <div class="form-group">
-            <label>Password</label>
-            <input type="password" id="password" class="form-control" required>
+        <div class="form-group" style="position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <label style="margin: 0;">Password</label>
+                <a href="/forgot-password/" style="color: var(--primary); font-size: 0.85rem; font-weight: 600; text-decoration: none;">Forgot Password?</a>
+            </div>
+            <div style="position: relative; display: flex; align-items: center; width: 100%;">
+                <input type="password" id="password" class="form-control" required style="padding-right: 2.75rem;">
+                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('password', this)" style="position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: center; height: 100%;">
+                    <i data-lucide="eye" style="width: 16px; height: 16px;"></i>
+                </button>
+            </div>
         </div>
         <button type="submit" class="btn" style="width: 100%">Login</button>
     </form>
@@ -59,6 +71,7 @@
                 localStorage.setItem('refresh_token', data.tokens.refresh);
                 localStorage.setItem('role', data.user.role);
                 localStorage.setItem('user_id', data.user.id);
+                localStorage.setItem('user_name', data.user.name);
                 if (data.user.is_superuser === true || data.user.is_superuser === 'true' || data.user.role === 'Admin') {
                     window.location.href = '/admin/';
                 } else {
@@ -97,6 +110,7 @@
                 localStorage.setItem('refresh_token', data.tokens.refresh);
                 localStorage.setItem('role', data.user.role);
                 localStorage.setItem('user_id', data.user.id);
+                localStorage.setItem('user_name', data.user.name);
                 if (data.user.is_superuser === true || data.user.is_superuser === 'true' || data.user.role === 'Admin') {
                     window.location.href = '/admin/';
                 } else {

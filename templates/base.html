@@ -3,16 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Room Dekho{% endblock %}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="robots" content="index, follow">
+    <title>{% block title %}Find Rooms & PG in Bhopal | Room Dekho{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Discover verified rooms, flats, hostels, and PGs in Bhopal directly from property owners with no brokerage. Find your perfect room today!{% endblock %}">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:title" content="{% block og_title %}Find Rooms & PG in Bhopal | Room Dekho{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Discover verified rooms, flats, hostels, and PGs in Bhopal directly from property owners with no brokerage. Find your perfect room today!{% endblock %}">
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=6.0">
+    <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo.png' %}{% endblock %}">
+    <meta property="og:site_name" content="Room Dekho">
+    <meta property="og:locale" content="en_IN">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ request.build_absolute_uri }}">
+    <meta name="twitter:title" content="{% block twitter_title %}Find Rooms & PG in Bhopal | Room Dekho{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Discover verified rooms, flats, hostels, and PGs in Bhopal directly from property owners with no brokerage. Find your perfect room today!{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo.png' %}{% endblock %}">
+
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=7.2">
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link rel="icon" href="{% static 'images/favicon.png' %}" type="image/png">
+    <link rel="apple-touch-icon" href="{% static 'images/favicon.png' %}">
+
+    <!-- Global JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Room Dekho",
+      "url": "{{ request.scheme }}://{{ request.get_host }}/",
+      "logo": "{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo.png' %}",
+      "description": "Bhopal's premier broker-free room rental marketplace. Find hostels, PGs, and flats directly from verified owners.",
+      "sameAs": [
+        "https://www.linkedin.com/in/kaushal-singh-ahirwar"
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Room Dekho",
+      "url": "{{ request.scheme }}://{{ request.get_host }}/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "{{ request.scheme }}://{{ request.get_host }}/#listings?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Room Dekho",
+      "image": "{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo.png' %}",
+      "@id": "{{ request.scheme }}://{{ request.get_host }}/",
+      "url": "{{ request.scheme }}://{{ request.get_host }}/",
+      "telephone": "+919977949032",
+      "priceRange": "₹₹",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "MP Nagar",
+        "addressLocality": "Bhopal",
+        "postalCode": "462011",
+        "addressRegion": "Madhya Pradesh",
+        "addressCountry": "IN"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 23.2332,
+        "longitude": 77.4343
+      },
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday"
+        ],
+        "opens": "00:00",
+        "closes": "23:59"
+      }
+    }
+    </script>
 </head>
 <body class="fade-in">
 
-<nav>
-    <a href="{% url 'home' %}" class="brand"><img src="{% static 'images/logo.png' %}" alt="Room Dekho" class="logo"></a>
+<nav id="mainNavbar">
+    <a href="{% url 'home' %}" class="brand" id="navBrand">
+        <img src="{% static 'images/logo.png' %}" alt="Room Dekho Logo" style="height: 32px; width: auto; object-fit: contain;">
+        <span>Room Dekho</span>
+    </a>
     
     <!-- Hamburger Menu Button (Mobile) -->
     <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu" aria-expanded="false">
@@ -23,38 +118,61 @@
     
     <div class="nav-links" id="navLinks">
         <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'home' %}#listings">Browse Rooms</a>
         <a href="{% url 'about' %}">About</a>
-        <button class="theme-toggle-btn" id="themeToggle" aria-label="Toggle theme">🌙</button>
-        <a href="/login" class="btn btn-secondary">Login</a>
-        <a href="/signup" class="btn">Sign Up</a>
+        <a href="{% url 'home' %}#contact">Contact</a>
+        <a href="/login" class="btn btn-outline" id="navLoginBtn" style="min-height: auto; padding: 0.5rem 1.25rem; border-radius: 100px;">Login</a>
+        <a href="/signup" class="btn" style="min-height: auto; padding: 0.5rem 1.25rem; border-radius: 100px;">Sign Up</a>
     </div>
 </nav>
 
-<div class="container">
-    {% block content %}{% endblock %}
-</div>
+{% block content %}{% endblock %}
 
 <footer class="footer">
-    <p>© 2026 Room Dekho. All rights reserved.</p>
-    <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.5rem;">We connect you directly with owners - no brokerage fees charged</p>
+    <div class="container" style="min-height: auto; border: none; background: transparent; box-shadow: none; padding: 0; margin: 0 auto 2rem;">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <a href="{% url 'home' %}" class="footer-brand">
+                    <img src="{% static 'images/logo.png' %}" alt="Room Dekho Logo" style="height: 32px; width: auto; object-fit: contain;">
+                    <span>Room Dekho</span>
+                </a>
+                <p style="font-size: 0.9rem; line-height: 1.5;">Bhopal's premier broker-free room rental marketplace. Find hostles, PGs, and flats directly from verified owners.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'home' %}#listings">Browse Rooms</a></li>
+                    <li><a href="{% url 'about' %}">About Us</a></li>
+                    <li><a href="/signup">List Your Property</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact Us</h4>
+                <a href="https://wa.me/919977949032" class="btn" style="background-color: #25D366; color: #ffffff !important; border-radius: 100px; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.25rem; font-size: 0.9rem; text-decoration: none; width: fit-content; margin-top: 0.5rem;" target="_blank">
+                    <i data-lucide="message-circle" style="width: 18px; height: 18px;"></i> Chat on WhatsApp
+                </a>
+            </div>
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Room Dekho. All rights reserved.</p>
+            <p>100% Brokerage-Free Guarantee</p>
+        </div>
+    </div>
 </footer>
 
+<!-- Lucide Icons CDN -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="{% static 'js/validation.js' %}"></script>
+
 <script>
-    // Theme Toggle
-    const themeBtn = document.getElementById('themeToggle');
-    const savedTheme = localStorage.getItem('theme');
-    
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark-mode');
-        themeBtn.textContent = '☀️';
-    }
-    
-    themeBtn.addEventListener('click', () => {
-        const isDark = document.body.classList.toggle('dark-mode');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        themeBtn.textContent = isDark ? '☀️' : '🌙';
-    });
-    
     // Hamburger Menu Toggle
     const hamburgerBtn = document.getElementById('hamburgerBtn');
     const navLinks = document.getElementById('navLinks');
@@ -64,20 +182,18 @@
         hamburgerBtn.setAttribute('aria-expanded', !isExpanded);
         hamburgerBtn.classList.toggle('active');
         navLinks.classList.toggle('active');
-        
-        // Prevent body scroll when menu is open
         document.body.classList.toggle('nav-open');
     });
     
-    // Close menu when clicking on a link inside nav-links (event delegation)
-    navLinks.addEventListener('click', () => {
-        hamburgerBtn.classList.remove('active');
-        navLinks.classList.remove('active');
-        hamburgerBtn.setAttribute('aria-expanded', 'false');
-        document.body.classList.remove('nav-open');
+    navLinks.addEventListener('click', (e) => {
+        if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') {
+            hamburgerBtn.classList.remove('active');
+            navLinks.classList.remove('active');
+            hamburgerBtn.setAttribute('aria-expanded', 'false');
+            document.body.classList.remove('nav-open');
+        }
     });
     
-    // Close menu when clicking outside
     document.addEventListener('click', (e) => {
         if (!hamburgerBtn.contains(e.target) && !navLinks.contains(e.target)) {
             hamburgerBtn.classList.remove('active');
@@ -87,8 +203,25 @@
         }
     });
     
-    // Auth check
+    // Auth check and UI initialization
     document.addEventListener('DOMContentLoaded', () => {
+        const nav = document.getElementById('mainNavbar');
+        const isHomePage = window.location.pathname === '/' || window.location.pathname === '/home/';
+        
+        if (isHomePage) {
+            document.body.classList.add('home-page');
+            if (nav) {
+                nav.classList.add('nav-transparent');
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 50) {
+                        nav.classList.remove('nav-transparent');
+                    } else {
+                        nav.classList.add('nav-transparent');
+                    }
+                });
+            }
+        }
+
         const token = localStorage.getItem('access_token');
         const role = localStorage.getItem('role');
         const navLinksContainer = document.getElementById('navLinks');
@@ -103,9 +236,9 @@
             // Add Dashboard / Admin link
             let dashLink = '';
             if (role === 'Owner' || role === 'Seeker') {
-                dashLink = '<a href="/dashboard" class="btn btn-secondary">Dashboard</a>';
+                dashLink = '<a href="/dashboard" class="btn btn-secondary" style="min-height: auto; padding: 0.5rem 1.25rem; border-radius: 100px;">Dashboard</a>';
             } else if (role === 'Admin') {
-                dashLink = '<a href="/admin/" class="btn btn-secondary">Admin</a>';
+                dashLink = '<a href="/admin/" class="btn btn-secondary" style="min-height: auto; padding: 0.5rem 1.25rem; border-radius: 100px;">Admin</a>';
             }
             
             if (dashLink) {
@@ -113,7 +246,12 @@
             }
             
             // Add Logout button
-            navLinksContainer.insertAdjacentHTML('beforeend', ' <button onclick="logout()" class="btn btn-secondary">Logout</button>');
+            navLinksContainer.insertAdjacentHTML('beforeend', ' <button onclick="logout()" class="btn btn-outline" style="min-height: auto; padding: 0.5rem 1.25rem; border-radius: 100px;">Logout</button>');
+        }
+
+        // Initialize Lucide Icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
         }
     });
     

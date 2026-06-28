@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Email Configuration | Room Dekho{% endblock %}
+{% block meta_description %}Configure SMTP credentials and email settings for Room Dekho.{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 900px; margin: 4rem auto; padding: 0 1rem;">
+    <!-- Authorization Guard -->
+    <script>
+        const token = localStorage.getItem('access_token');
+        const role = localStorage.getItem('role');
+        if (!token || role !== 'Admin') {
+            window.location.href = '/login/';
+        }
+    </script>
+
+    <div class="d-flex align-center justify-between mb-6">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 800; color: var(--text-main); margin: 0;">Email Configuration</h1>
+            <p class="text-muted" style="margin-top: 0.25rem;">Configure and verify the centralized SMTP settings for Room Dekho.</p>
+        </div>
+    </div>
+
+    <div id="globalAlert" style="display:none; padding: 15px; border-radius: 12px; margin-bottom: 24px; font-weight: 600;"></div>
+
+    <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem;">
+        
+        <!-- SMTP Settings Form -->
+        <div class="card" style="background-color: var(--bg-card); padding: 2rem; border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+            <h3 style="margin-bottom: 1.5rem; font-weight: 700; font-size: 1.2rem;">SMTP Credentials</h3>
+            
+            <form id="emailConfigForm">
+                <div class="form-group">
+                    <label for="emailHostUser">Email Address</label>
+                    <input type="email" id="emailHostUser" class="form-control" placeholder="yourname@gmail.com" required>
+                </div>
+
+                <div class="form-group" style="position: relative;">
+                    <label for="emailHostPassword">App Password</label>
+                    <div style="position: relative; display: flex; align-items: center; width: 100%;">
+                        <input type="password" id="emailHostPassword" class="form-control" placeholder="••••••••" required style="padding-right: 2.75rem;">
+                        <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('emailHostPassword', this)" style="position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: center; height: 100%;">
+                            <i data-lucide="eye" style="width: 16px; height: 16px;"></i>
+                        </button>
+                    </div>
+                    <small class="text-muted" style="font-size: 0.75rem; margin-top: 0.25rem; display: block;">Use a 16-digit Google App Password for Gmail.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="senderName">Sender Name</label>
+                    <input type="text" id="senderName" class="form-control" value="Room Dekho" readonly style="background-color: var(--bg-main); color: var(--text-muted); cursor: not-allowed;">
+                </div>
+
+                <div class="form-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="emailHost">SMTP Host</label>
+                        <input type="text" id="emailHost" class="form-control" placeholder="smtp.gmail.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="emailPort">SMTP Port</label>
+                        <input type="text" id="emailPort" class="form-control text-center" placeholder="587" required>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-weight: 600; font-size: 0.9rem;">
+                        <input type="checkbox" id="emailUseTls" checked style="width: 18px; height: 18px; border-radius: 4px; border: 1px solid var(--border);">
+                        Enable TLS Secure Connection
+                    </label>
+                </div>
+
+                <button type="submit" class="btn" id="saveBtn" style="width: 100%; height: 44px; margin-top: 1.5rem; border-radius: 100px;">
+                    Save & Verify Settings
+                </button>
+            </form>
+        </div>
+
+        <!-- Connection Test Panel -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <div class="card" style="background-color: var(--bg-card); padding: 2rem; border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+                <h3 style="margin-bottom: 1rem; font-weight: 700; font-size: 1.2rem;">Test SMTP Connection</h3>
+                <p class="text-muted" style="font-size: 0.85rem; margin-bottom: 1.5rem;">Send a test email to verify that your configured SMTP settings are active and working.</p>
+                
+                <form id="testEmailForm">
+                    <div class="form-group">
+                        <label for="testRecipient">Recipient Email</label>
+                        <input type="email" id="testRecipient" class="form-control" placeholder="test-recipient@example.com" required>
+                    </div>
+                    <button type="submit" class="btn btn-outline" id="testBtn" style="width: 100%; height: 44px; margin-top: 1rem; border-radius: 100px;">
+                        Send Test Email
+                    </button>
+                </form>
+            </div>
+
+            <div class="card" style="background-color: rgba(37, 99, 235, 0.05); padding: 1.5rem; border-radius: 16px; border: 1px dashed var(--primary); font-size: 0.85rem; color: var(--text-main);">
+                <h4 style="color: var(--primary); font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.25rem;">
+                    <i data-lucide="info" style="width: 16px; height: 16px;"></i> Gmail Setup Guide
+                </h4>
+                <p style="line-height: 1.5; margin: 0;">
+                    1. Go to your Google Account Settings.<br>
+                    2. Enable <strong>2-Step Verification</strong>.<br>
+                    3. Search for <strong>App Passwords</strong>.<br>
+                    4. Generate a new password for "Mail" and "Other".<br>
+                    5. Copy the 16-character code and paste it in the App Password field.
+                </p>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const globalAlert = document.getElementById('globalAlert');
+
+    function showAlert(msg, isSuccess = false) {
+        globalAlert.style.display = 'block';
+        globalAlert.textContent = msg;
+        if (isSuccess) {
+            globalAlert.style.backgroundColor = '#D1FAE5';
+            globalAlert.style.color = '#059669';
+            globalAlert.style.border = '1px solid #10B981';
+        } else {
+            globalAlert.style.backgroundColor = '#FEE2E2';
+            globalAlert.style.color = '#DC2626';
+            globalAlert.style.border = '1px solid #EF4444';
+        }
+    }
+
+    // Load current SMTP configuration
+    async function loadConfig() {
+        try {
+            const res = await fetch('/api/auth/email-config/', {
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('access_token') }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                document.getElementById('emailHost').value = data.email_host;
+                document.getElementById('emailPort').value = data.email_port;
+                document.getElementById('emailHostUser').value = data.email_host_user;
+                document.getElementById('emailHostPassword').value = data.email_host_password;
+                document.getElementById('emailUseTls').checked = data.email_use_tls;
+            }
+        } catch (err) {
+            console.error("Failed to load SMTP config", err);
+        }
+    }
+
+    // Save SMTP configuration
+    document.getElementById('emailConfigForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const saveBtn = document.getElementById('saveBtn');
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Verifying & Saving...';
+        globalAlert.style.display = 'none';
+
+        const payload = {
+            email_host: document.getElementById('emailHost').value,
+            email_port: document.getElementById('emailPort').value,
+            email_host_user: document.getElementById('emailHostUser').value,
+            email_host_password: document.getElementById('emailHostPassword').value,
+            email_use_tls: document.getElementById('emailUseTls').checked
+        };
+
+        try {
+            const res = await fetch('/api/auth/email-config/', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                showAlert(data.message || 'SMTP settings saved and verified successfully!', true);
+            } else {
+                showAlert(data.error || 'Failed to verify SMTP settings. Check your credentials.');
+            }
+        } catch (err) {
+            showAlert('Network error. Please try again.');
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save & Verify Settings';
+        }
+    });
+
+    // Send Test Email
+    document.getElementById('testEmailForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const testBtn = document.getElementById('testBtn');
+        const recipient = document.getElementById('testRecipient').value;
+        
+        testBtn.disabled = true;
+        testBtn.textContent = 'Sending Test Email...';
+        globalAlert.style.display = 'none';
+
+        try {
+            const res = await fetch('/api/auth/test-email/', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                },
+                body: JSON.stringify({ email: recipient })
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                showAlert(data.message || 'Test email sent successfully! Please check your inbox.', true);
+            } else {
+                showAlert(data.error || 'Failed to send test email. Ensure SMTP is verified and saved first.');
+            }
+        } catch (err) {
+            showAlert('Network error.');
+        } finally {
+            testBtn.disabled = false;
+            testBtn.textContent = 'Send Test Email';
+        }
+    });
+
+    // Initial load
+    loadConfig();
+</script>
+{% endblock %}

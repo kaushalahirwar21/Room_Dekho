@@ -22,7 +22,8 @@ class PropertySerializer(serializers.ModelSerializer):
         fields = (
             'id', 'owner', 'owner_name', 'title', 'description', 'price', 
             'location', 'room_type', 'bachelor_allowed', 'created_at', 
-            'images', 'first_image'
+            'images', 'first_image',
+            'floor', 'room_size', 'bathroom', 'furnishing', 'parking', 'available_from'
         )
         read_only_fields = ('id', 'owner', 'created_at')
 

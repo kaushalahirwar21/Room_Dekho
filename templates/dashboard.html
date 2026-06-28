@@ -1,90 +1,274 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<div id="ownerDashboard" style="display: none;">
-    <h2>Owner Dashboard</h2>
-    <p class="text-muted mb-4">Manage your properties and booking requests.</p>
-    
-    <button class="btn mb-4" onclick="document.getElementById('addPropertyForm').style.display='block'">+ Add New Property</button>
+<div class="dashboard-layout fade-in">
+    <!-- Sidebar Navigation -->
+    <aside class="dashboard-sidebar">
+        <ul class="dashboard-menu" id="dashboardMenu">
+            <!-- Dynamic menu items will be injected here by JS -->
+        </ul>
+    </aside>
 
-    <div class="form-container" id="addPropertyForm" style="display: none; margin: 0; max-width: 100%; margin-bottom: 2rem;">
-        <h3>Add Property</h3>
-        <form id="propertyForm">
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Title</label>
-                    <input type="text" id="p_title" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label>Price (₹/month)</label>
-                    <input type="number" id="p_price" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label>Location</label>
-                    <input type="text" id="p_location" class="form-control" list="bhopalLocations" required>
-                    <datalist id="bhopalLocations">
-                        <option value="MP Nagar">
-                        <option value="Arera Colony">
-                        <option value="Kolar Road">
-                        <option value="Bawadia Kalan">
-                        <option value="Habibganj">
-                        <option value="Ayodhya Nagar">
-                        <option value="Shahpura">
-                        <option value="Chuna Bhatti">
-                        <option value="Jatpure">
-                    </datalist>
-                </div>
-                <div class="form-group">
-                    <label>Room Type</label>
-                    <select id="p_type" class="form-control">
-                        <option value="1RK">1RK</option>
-                        <option value="1BHK">1BHK</option>
-                        <option value="2BHK">2BHK</option>
-                        <option value="PG">PG</option>
-                        <option value="Hostel">Hostel</option>
-                    </select>
-                </div>
+    <!-- Main Content Area -->
+    <main class="dashboard-main">
+        <!-- Header -->
+        <div class="d-flex justify-between align-center mb-4">
+            <div>
+                <h2 id="welcomeHeader" style="font-size: 1.8rem; font-weight: 800; letter-spacing: -0.025em;">Welcome Back!</h2>
+                <p class="text-muted" style="font-size: 0.95rem;">Manage your room listings and booking requests here.</p>
             </div>
-            <div class="form-group">
-                <label>Description</label>
-                <textarea id="p_desc" class="form-control" required></textarea>
-            </div>
-            <div class="form-group" style="display: flex; align-items: center;">
-                <input type="checkbox" id="p_bachelor" checked style="margin-right: 10px;">
-                <label style="margin: 0; display: inline;">Bachelor Allowed</label>
-            </div>
-            <div class="form-group">
-                <label>Property Images</label>
-                <div class="image-upload-area" id="imageUploadArea">
-                    <input type="file" id="p_images" class="image-input" accept="image/jpeg,image/png,image/webp" multiple onchange="handleImageSelect(this.files)">
-                    <label for="p_images" class="image-upload-label">
-                        <span class="upload-icon">📷</span>
-                        <span>Click or drag images here</span>
-                        <small>JPG, PNG, WebP • Max 5MB each</small>
-                    </label>
-                </div>
-                <div class="image-preview-grid" id="imagePreviewGrid"></div>
-                <div class="upload-error" id="uploadError"></div>
-            </div>
-            <button type="submit" class="btn" id="submitBtn">Save Property</button>
-            <button type="button" class="btn btn-secondary" onclick="closePropertyForm()">Cancel</button>
-        </form>
-    </div>
+            <button class="btn" id="headerActionBtn" onclick="showPanel('addPropertySection')" style="display: none;">
+                <i data-lucide="plus" style="width: 18px; height: 18px; margin-right: 6px;"></i> Add Property
+            </button>
+        </div>
 
-    <h3>My Properties</h3>
-    <div class="property-grid" id="myPropertiesContainer"></div>
+        <!-- Owner Dashboard Views -->
+        <div id="ownerViews" style="display: none;">
+            <!-- Stats Cards -->
+            <div class="dashboard-stats-grid mb-6">
+                <div class="stats-card">
+                    <div class="stats-icon-box"><i data-lucide="home"></i></div>
+                    <div class="stats-info">
+                        <span class="stats-value" id="statProperties">0</span>
+                        <span class="stats-label">Total Properties</span>
+                    </div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-icon-box" style="background-color: #ECFDF5; color: #10B981;"><i data-lucide="eye"></i></div>
+                    <div class="stats-info">
+                        <span class="stats-value" id="statViews">284</span>
+                        <span class="stats-label">Total Views</span>
+                    </div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-icon-box" style="background-color: #FEF3C7; color: #F59E0B;"><i data-lucide="message-square"></i></div>
+                    <div class="stats-info">
+                        <span class="stats-value" id="statInquiries">0</span>
+                        <span class="stats-label">Total Inquiries</span>
+                    </div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-icon-box" style="background-color: #EEF2F6; color: #64748B;"><i data-lucide="check-circle"></i></div>
+                    <div class="stats-info">
+                        <span class="stats-value" id="statActive">0</span>
+                        <span class="stats-label">Active Listings</span>
+                    </div>
+                </div>
+            </div>
 
-    <h3 class="mt-4">Requests Made To My Properties</h3>
-    <div class="dashboard-list" id="ownerRequestsContainer"></div>
+            <!-- Properties Panel -->
+            <div class="dashboard-panel mb-6" id="myPropertiesSection">
+                <div class="panel-header">
+                    <h3>My Listed Properties</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="dashboard-table">
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>Location</th>
+                                <th>Price</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="myPropertiesTableBody">
+                            <tr>
+                                <td colspan="6" class="text-center text-muted" style="padding: 3rem 0;">Loading your properties...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Requests Panel -->
+            <div class="dashboard-panel" id="ownerRequestsSection">
+                <div class="panel-header">
+                    <h3>Booking Requests Received</h3>
+                </div>
+                <div class="dashboard-list" id="ownerRequestsContainer">
+                    <p class="text-center text-muted" style="padding: 2rem 0;">Loading booking requests...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seeker Dashboard Views -->
+        <div id="seekerViews" style="display: none;">
+            <!-- Seeker Requests Panel -->
+            <div class="dashboard-panel" id="seekerRequestsSection">
+                <div class="panel-header">
+                    <h3>My Sent Booking Requests</h3>
+                </div>
+                <div class="dashboard-list" id="seekerRequestsContainer">
+                    <p class="text-center text-muted" style="padding: 2rem 0;">Loading your booking requests...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Property Section (Multi-step Wizard Form) -->
+        <div class="dashboard-panel" id="addPropertySection" style="display: none;">
+            <div class="panel-header">
+                <h3>Add New Property</h3>
+                <button class="btn btn-outline" onclick="showPanel('default')" style="min-height: auto; padding: 0.4rem 1.25rem;">Back to Dashboard</button>
+            </div>
+            
+            <!-- Wizard Steps Header -->
+            <div class="form-wizard-steps">
+                <div class="wizard-step active" id="stepIndicator1">
+                    <div class="wizard-step-circle">1</div>
+                    <span class="wizard-step-label">Basic Info</span>
+                </div>
+                <div class="wizard-step" id="stepIndicator2">
+                    <div class="wizard-step-circle">2</div>
+                    <span class="wizard-step-label">Location & Price</span>
+                </div>
+                <div class="wizard-step" id="stepIndicator3">
+                    <div class="wizard-step-circle">3</div>
+                    <span class="wizard-step-label">Images & Details</span>
+                </div>
+            </div>
+
+            <form id="propertyForm">
+                <!-- Step 1: Basic Info -->
+                <div class="wizard-tab" id="stepTab1">
+                    <div class="form-group">
+                        <label for="p_title">Listing Title</label>
+                        <input type="text" id="p_title" class="form-control" placeholder="e.g. Spacious Single Room near MP Nagar" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="p_desc">Description</label>
+                        <textarea id="p_desc" class="form-control" rows="5" placeholder="Provide detailed information about the room, amenities, nearby places, etc." required style="resize: none;"></textarea>
+                    </div>
+                    <div class="d-flex justify-between">
+                        <div></div>
+                        <button type="button" class="btn" onclick="nextStep(2)">Next: Location & Price <i data-lucide="arrow-right" style="width: 16px; height: 16px; margin-left: 6px; display: inline; vertical-align: middle;"></i></button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Location & Price -->
+                <div class="wizard-tab" id="stepTab2" style="display: none;">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="p_location">Location in Bhopal</label>
+                            <input type="text" id="p_location" class="form-control" list="bhopalLocations" placeholder="e.g. MP Nagar" required>
+                            <datalist id="bhopalLocations">
+                                <option value="MP Nagar">
+                                <option value="Arera Colony">
+                                <option value="Kolar Road">
+                                <option value="Bawadia Kalan">
+                                <option value="Habibganj">
+                                <option value="Ayodhya Nagar">
+                                <option value="Shahpura">
+                                <option value="Chuna Bhatti">
+                            </datalist>
+                        </div>
+                        <div class="form-group">
+                            <label for="p_price">Monthly Rent (₹)</label>
+                            <input type="text" id="p_price" class="form-control" inputmode="numeric" placeholder="e.g. ₹6,000" required>
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="p_type">Property Type</label>
+                            <select id="p_type" class="form-control">
+                                <option value="1RK">Single Room (1RK)</option>
+                                <option value="1BHK">1 BHK Flat</option>
+                                <option value="2BHK">2 BHK Flat</option>
+                                <option value="PG">PG</option>
+                                <option value="Hostel">Hostel</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="display: flex; align-items: center; margin-top: 1.8rem; gap: 0.5rem;">
+                            <input type="checkbox" id="p_bachelor" checked>
+                            <label for="p_bachelor" style="margin: 0; cursor: pointer;">Bachelor Allowed</label>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-between">
+                        <button type="button" class="btn btn-outline" onclick="nextStep(1)"><i data-lucide="arrow-left" style="width: 16px; height: 16px; margin-right: 6px; display: inline; vertical-align: middle;"></i> Back</button>
+                        <button type="button" class="btn" onclick="nextStep(3)">Next: Images & Details <i data-lucide="arrow-right" style="width: 16px; height: 16px; margin-left: 6px; display: inline; vertical-align: middle;"></i></button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Images & Details -->
+                <div class="wizard-tab" id="stepTab3" style="display: none;">
+                    <div class="form-group">
+                        <label>Upload Room Images</label>
+                        <div class="image-upload-area" id="imageUploadArea">
+                            <input type="file" id="p_images" class="image-input" accept="image/jpeg,image/png,image/webp" multiple onchange="handleImageSelect(this.files)">
+                            <label for="p_images" class="image-upload-label">
+                                <span class="upload-icon">📷</span>
+                                <span style="font-weight: 700;">Drag & drop images or click to browse</span>
+                                <small>Supports JPG, PNG, WebP • Max 5MB each</small>
+                            </label>
+                        </div>
+                        <div class="image-preview-grid" id="imagePreviewGrid"></div>
+                        <div class="upload-error" id="uploadError"></div>
+                    </div>
+
+                    <!-- Extra Specifications -->
+                    <h4 style="margin-top: 2rem; margin-bottom: 1.5rem; font-weight: 700; color: var(--text-main);">Property Details & Specifications</h4>
+                    
+                    <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="form-group floating-label-group">
+                            <input type="text" id="p_floor" class="form-control" placeholder=" " required>
+                            <label for="p_floor">Floor</label>
+                        </div>
+                        <div class="form-group floating-label-group">
+                            <input type="text" id="p_room_size" class="form-control" placeholder=" " required>
+                            <label for="p_room_size">Room Size</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="form-group floating-label-group">
+                            <select id="p_bathroom" class="form-control" required>
+                                <option value="" disabled selected hidden></option>
+                                <option value="Attached">Attached</option>
+                                <option value="Common">Common</option>
+                                <option value="Private">Private</option>
+                                <option value="Shared">Shared</option>
+                            </select>
+                            <label for="p_bathroom">Bathroom</label>
+                        </div>
+                        <div class="form-group floating-label-group">
+                            <select id="p_furnishing" class="form-control" required>
+                                <option value="" disabled selected hidden></option>
+                                <option value="Fully-Furnished">Fully Furnished</option>
+                                <option value="Semi-Furnished">Semi Furnished</option>
+                                <option value="Unfurnished">Unfurnished</option>
+                            </select>
+                            <label for="p_furnishing">Furnishing</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="form-group floating-label-group">
+                            <select id="p_parking" class="form-control" required>
+                                <option value="" disabled selected hidden></option>
+                                <option value="No Parking">No Parking</option>
+                                <option value="Bike Parking">Bike Parking</option>
+                                <option value="Car Parking">Car Parking</option>
+                                <option value="Bike + Car Parking">Bike + Car Parking</option>
+                            </select>
+                            <label for="p_parking">Parking</label>
+                        </div>
+                        <div class="form-group floating-label-group">
+                            <input type="date" id="p_available_from" class="form-control" placeholder=" " required>
+                            <label for="p_available_from">Available From</label>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-between">
+                        <button type="button" class="btn btn-outline" onclick="nextStep(2)"><i data-lucide="arrow-left" style="width: 16px; height: 16px; margin-right: 6px; display: inline; vertical-align: middle;"></i> Back</button>
+                        <button type="submit" class="btn" id="submitBtn">Publish Property <i data-lucide="check" style="width: 16px; height: 16px; margin-left: 6px; display: inline; vertical-align: middle;"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
 </div>
-
-<div id="seekerDashboard" style="display: none;">
-    <h2>Seeker Dashboard</h2>
-    <p class="text-muted">Track your booking requests here.</p>
-    
-    <div class="dashboard-list" id="seekerRequestsContainer"></div>
-</div>
-
 {% endblock %}
 
 {% block scripts %}
@@ -98,18 +282,114 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+        // Fetch user profile name
+        fetchWelcomeHeader();
+        
+        // Setup Sidebar Menu and Views
+        const menuContainer = document.getElementById('dashboardMenu');
         if (role === 'Owner') {
-            document.getElementById('ownerDashboard').style.display = 'block';
+            document.getElementById('ownerViews').style.display = 'block';
+            document.getElementById('headerActionBtn').style.display = 'inline-flex';
+            
+            // Build Owner Menu
+            menuContainer.innerHTML = `
+                <li><a href="#" class="dashboard-menu-item active" onclick="showPanel('default')"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
+                <li><a href="#" class="dashboard-menu-item" onclick="showPanel('myPropertiesSection')"><i data-lucide="home"></i> My Properties</a></li>
+                <li><a href="#" class="dashboard-menu-item" onclick="showPanel('addPropertySection')"><i data-lucide="plus-circle"></i> Add Property</a></li>
+                <li><a href="#" class="dashboard-menu-item" onclick="showPanel('ownerRequestsSection')"><i data-lucide="mail"></i> Bookings</a></li>
+                <li><a href="javascript:void(0)" class="dashboard-menu-item logout-item" onclick="logout()"><i data-lucide="log-out"></i> Logout</a></li>
+            `;
+            
             fetchMyProperties();
             fetchRequests('ownerRequestsContainer');
         } else if (role === 'Seeker') {
-            document.getElementById('seekerDashboard').style.display = 'block';
+            document.getElementById('seekerViews').style.display = 'block';
+            
+            // Build Seeker Menu
+            menuContainer.innerHTML = `
+                <li><a href="#" class="dashboard-menu-item active" onclick="showPanel('default')"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
+                <li><a href="#" class="dashboard-menu-item" onclick="showPanel('seekerRequestsSection')"><i data-lucide="heart"></i> Saved Rooms</a></li>
+                <li><a href="#" class="dashboard-menu-item" onclick="showPanel('seekerRequestsSection')"><i data-lucide="check-circle"></i> Bookings</a></li>
+                <li><a href="javascript:void(0)" class="dashboard-menu-item logout-item" onclick="logout()"><i data-lucide="log-out"></i> Logout</a></li>
+            `;
+            
             fetchRequests('seekerRequestsContainer');
         } else {
-            // Admin or other
-            document.body.innerHTML = '<h2>Access Denied</h2>';
+            document.body.innerHTML = '<div class="container text-center" style="padding: 5rem 0;"><h2>Access Denied</h2><a href="/" class="btn mt-4">Go Home</a></div>';
+        }
+        
+        // Reinitialize Lucide Icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
         }
     });
+
+    function fetchWelcomeHeader() {
+        const welcomeHeader = document.getElementById('welcomeHeader');
+        const userName = localStorage.getItem('user_name') || 'User';
+        welcomeHeader.textContent = `Welcome Back, ${userName} 👋`;
+    }
+
+    // Toggle different sections/panels
+    function showPanel(sectionId) {
+        // Remove active class from menu items
+        document.querySelectorAll('.dashboard-menu-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        // Hide all major sections
+        if (role === 'Owner') {
+            document.getElementById('ownerViews').style.display = 'none';
+            document.getElementById('addPropertySection').style.display = 'none';
+            
+            if (sectionId === 'default') {
+                document.getElementById('ownerViews').style.display = 'block';
+                document.getElementById('myPropertiesSection').style.display = 'block';
+                document.getElementById('ownerRequestsSection').style.display = 'block';
+                document.querySelector('.dashboard-menu-item[onclick*="default"]').classList.add('active');
+            } else if (sectionId === 'addPropertySection') {
+                document.getElementById('addPropertySection').style.display = 'block';
+                document.querySelector('.dashboard-menu-item[onclick*="addPropertySection"]').classList.add('active');
+                nextStep(1); // Reset form wizard to step 1
+            } else {
+                document.getElementById('ownerViews').style.display = 'block';
+                document.getElementById('myPropertiesSection').style.display = 'none';
+                document.getElementById('ownerRequestsSection').style.display = 'none';
+                document.getElementById(sectionId).style.display = 'block';
+                document.querySelector(`.dashboard-menu-item[onclick*="${sectionId}"]`).classList.add('active');
+            }
+        } else if (role === 'Seeker') {
+            document.getElementById('seekerViews').style.display = 'block';
+            document.querySelector('.dashboard-menu-item[onclick*="default"]').classList.add('active');
+        }
+    }
+
+    // Wizard Form Logic
+    let currentTab = 1;
+    function nextStep(stepNum) {
+        // Hide all tabs and deactivate indicators
+        document.querySelectorAll('.wizard-tab').forEach(tab => tab.style.display = 'none');
+        document.querySelectorAll('.wizard-step').forEach(step => step.classList.remove('active'));
+        
+        // Show current tab and activate indicators
+        document.getElementById('stepTab' + stepNum).style.display = 'block';
+        document.getElementById('stepIndicator' + stepNum).classList.add('active');
+        
+        // Mark previous steps as completed
+        for (let i = 1; i < stepNum; i++) {
+            document.getElementById('stepIndicator' + i).classList.add('completed');
+        }
+        for (let i = stepNum; i <= 3; i++) {
+            document.getElementById('stepIndicator' + i).classList.remove('completed');
+        }
+        
+        currentTab = stepNum;
+        
+        // Reinitialize icons in tabs
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
 
     async function fetchMyProperties() {
         try {
@@ -118,30 +398,49 @@
                 throw new Error('Failed to fetch properties');
             }
             const data = await res.json();
-            const container = document.getElementById('myPropertiesContainer');
+            const tableBody = document.getElementById('myPropertiesTableBody');
+            
+            // Update stats
+            document.getElementById('statProperties').textContent = data.length;
+            document.getElementById('statActive').textContent = data.length; // assuming all are active
             
             if (!Array.isArray(data) || data.length === 0) {
-                container.innerHTML = '<p>You have not listed any properties yet.</p>';
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">You have not listed any properties yet.</td></tr>';
                 return;
             }
             
             let html = '';
             data.forEach(prop => {
+                const img = prop.first_image || (prop.images && prop.images[0]?.image) || 'https://placehold.co/60x60/f1f5f9/94a3b8/png?text=Room';
                 html += `
-                    <div class="card">
-                        <div class="card-body">
-                            <h3 class="card-title">${prop.title}</h3>
-                            <div class="card-price">₹${prop.price}</div>
-                            <div class="card-info">📍 ${prop.location} | 🏠 ${prop.room_type}</div>
-                            <button class="btn-secondary" onclick="deleteProperty(${prop.id})">Delete</button>
-                        </div>
-                    </div>
+                    <tr>
+                        <td>
+                            <div class="table-property-cell">
+                                <img src="${img}" class="table-property-img" alt="${prop.title}">
+                                <div style="font-weight: 700;">${prop.title}</div>
+                            </div>
+                        </td>
+                        <td>${prop.location}</td>
+                        <td style="font-weight: 700; color: var(--primary);">₹${parseFloat(prop.price).toLocaleString('en-IN')}</td>
+                        <td><span class="badge">${prop.room_type}</span></td>
+                        <td><span class="status-badge status-Approved">Active</span></td>
+                        <td>
+                            <div class="table-actions">
+                                <button class="table-btn" title="View Property" onclick="window.location.href='/property/${prop.id}/'"><i data-lucide="eye" style="width: 16px; height: 16px;"></i></button>
+                                <button class="table-btn delete-btn" title="Delete Property" onclick="deleteProperty(${prop.id})"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i></button>
+                            </div>
+                        </td>
+                    </tr>
                 `;
             });
-            container.innerHTML = html;
+            tableBody.innerHTML = html;
+            
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
         } catch (error) {
             console.error(error);
-            document.getElementById('myPropertiesContainer').innerHTML = '<p style="color: var(--text-muted)">Failed to load properties.</p>';
+            document.getElementById('myPropertiesTableBody').innerHTML = '<tr><td colspan="6" class="text-center text-muted">Failed to load properties.</td></tr>';
         }
     }
 
@@ -160,8 +459,13 @@
             const data = await res.json();
             const container = document.getElementById(containerId);
             
+            // Update owner inquiries stat
+            if (role === 'Owner') {
+                document.getElementById('statInquiries').textContent = data.length;
+            }
+            
             if (!Array.isArray(data) || data.length === 0) {
-                container.innerHTML = '<p>No booking requests found.</p>';
+                container.innerHTML = '<p class="text-center text-muted" style="padding: 2rem 0;">No booking requests found.</p>';
                 return;
             }
             
@@ -172,22 +476,24 @@
                 
                 if (isOwner && req.status === 'Pending') {
                     actionBtns = `
-                        <button class="btn" style="padding: 2px 8px; font-size: 0.8rem;" onclick="updateReq(${req.id}, 'Approved')">Approve</button>
-                        <button class="btn btn-secondary" style="padding: 2px 8px; font-size: 0.8rem; background: #ef4444; color: #fff; border:none;" onclick="updateReq(${req.id}, 'Rejected')">Reject</button>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn" style="padding: 0.4rem 1rem; font-size: 0.8rem; border-radius: 6px;" onclick="updateReq(${req.id}, 'Approved')">Approve</button>
+                            <button class="btn btn-secondary" style="padding: 0.4rem 1rem; font-size: 0.8rem; background: #fee2e2; color: #ef4444; border-radius: 6px;" onclick="updateReq(${req.id}, 'Rejected')">Reject</button>
+                        </div>
                     `;
                 }
                 
                 html += `
                     <div class="list-item">
                         <div>
-                            <strong>${req.property_details ? req.property_details.title : 'Property'}</strong><br>
+                            <div style="font-weight: 700; font-size: 1.05rem; margin-bottom: 0.25rem;">${req.property_details ? req.property_details.title : 'Property'}</div>
                             <span class="text-muted" style="font-size: 0.85rem">
-                                Seeker: ${req.seeker_name}
-                                ${req.seeker_email ? ` | ${req.seeker_email}` : ''}
-                                ${req.seeker_mobile ? ` | ${req.seeker_mobile}` : ''}
+                                👤 Seeker: <strong>${req.seeker_name}</strong>
+                                ${req.seeker_email ? ` | ✉️ ${req.seeker_email}` : ''}
+                                ${req.seeker_mobile ? ` | 📞 ${req.seeker_mobile}` : ''}
                             </span>
                         </div>
-                        <div style="display: flex; gap: 10px; align-items: center;">
+                        <div style="display: flex; gap: 1rem; align-items: center;">
                             <span class="status-badge status-${req.status}">${req.status}</span>
                             ${actionBtns}
                         </div>
@@ -195,12 +501,17 @@
                 `;
             });
             container.innerHTML = html;
+            
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
         } catch (error) {
             console.error(error);
-            document.getElementById(containerId).innerHTML = '<p style="color: var(--text-muted)">Failed to load requests.</p>';
+            document.getElementById(containerId).innerHTML = '<p class="text-center text-muted" style="padding: 2rem 0;">Failed to load requests.</p>';
         }
     }
 
+    // Image Upload Logic
     let selectedImages = [];
     const MAX_FILE_SIZE = 5 * 1024 * 1024;
     const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -264,9 +575,9 @@
     function closePropertyForm() {
         selectedImages = [];
         renderImagePreviews();
-        document.getElementById('addPropertyForm').style.display = 'none';
         document.getElementById('propertyForm').reset();
         document.getElementById('uploadError').style.display = 'none';
+        showPanel('default');
     }
 
     document.getElementById('propertyForm').addEventListener('submit', async (e) => {
@@ -274,15 +585,25 @@
         
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Uploading...';
+        submitBtn.textContent = 'Publishing...';
         
         const formData = new FormData();
         formData.append('title', document.getElementById('p_title').value);
-        formData.append('price', document.getElementById('p_price').value);
+        const priceInput = document.getElementById('p_price');
+        const priceValue = priceInput.dataset.rawValue || priceInput.value;
+        formData.append('price', priceValue);
         formData.append('location', document.getElementById('p_location').value);
         formData.append('room_type', document.getElementById('p_type').value);
         formData.append('description', document.getElementById('p_desc').value);
         formData.append('bachelor_allowed', document.getElementById('p_bachelor').checked);
+        
+        // Append extra specifications
+        formData.append('floor', document.getElementById('p_floor').value);
+        formData.append('room_size', document.getElementById('p_room_size').value);
+        formData.append('bathroom', document.getElementById('p_bathroom').value);
+        formData.append('furnishing', document.getElementById('p_furnishing').value);
+        formData.append('parking', document.getElementById('p_parking').value);
+        formData.append('available_from', document.getElementById('p_available_from').value);
         
         for (let image of selectedImages) {
             formData.append('uploaded_images', image);
@@ -296,7 +617,7 @@
             });
             
             if (res.ok) {
-                alert('Property added successfully');
+                alert('Property added successfully!');
                 closePropertyForm();
                 fetchMyProperties();
             } else {
@@ -308,7 +629,7 @@
                     message = data.error || data.detail || message;
                 } catch (parseError) {
                     message = res.status >= 500
-                        ? 'Server error while uploading images. Please try again.'
+                        ? 'Server error while uploading. Please try again.'
                         : `Failed to add property (${res.status})`;
                 }
 
@@ -318,18 +639,20 @@
             alert('Error: ' + err.message);
         } finally {
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Save Property';
+            submitBtn.textContent = 'Publish Property';
         }
     });
 
     async function deleteProperty(id) {
-        if (!confirm("Are you sure?")) return;
+        if (!confirm("Are you sure you want to delete this listing?")) return;
         try {
             const res = await fetch(`/api/properties/${id}/`, {
                 method: 'DELETE',
                 headers: { 'Authorization': 'Bearer ' + token }
             });
-            if (res.ok) fetchMyProperties();
+            if (res.ok) {
+                fetchMyProperties();
+            }
         } catch (err) { }
     }
 
@@ -343,7 +666,9 @@
                 },
                 body: JSON.stringify({ status })
             });
-            if (res.ok) fetchRequests('ownerRequestsContainer');
+            if (res.ok) {
+                fetchRequests('ownerRequestsContainer');
+            }
         } catch (err) { }
     }
 </script>

@@ -78,10 +78,14 @@ def notify_owner_about_booking_request(booking_request):
         f"Room Dekho Team"
     )
 
-    send_mail(
-        subject,
-        message,
-        settings.EMAIL_HOST_USER,
-        [owner.email],
-        fail_silently=True,
+    from accounts.email_service import EmailService
+    EmailService.send_booking_notification(
+        owner_email=owner.email,
+        owner_name=owner.name,
+        seeker_name=seeker.name,
+        seeker_email=seeker.email,
+        seeker_mobile=seeker.mobile_number or 'Not provided',
+        property_title=booking_request.property.title,
+        property_location=booking_request.property.location,
+        property_price=booking_request.property.price
     )

@@ -17,6 +17,15 @@ class Property(models.Model):
     location = models.CharField(max_length=255)
     room_type = models.CharField(max_length=50, choices=ROOM_TYPES)
     bachelor_allowed = models.BooleanField(default=True)
+    
+    # New specification fields
+    floor = models.CharField(max_length=50, blank=True, null=True)
+    room_size = models.CharField(max_length=50, blank=True, null=True)
+    bathroom = models.CharField(max_length=50, blank=True, null=True)
+    furnishing = models.CharField(max_length=50, blank=True, null=True)
+    parking = models.CharField(max_length=50, blank=True, null=True)
+    available_from = models.CharField(max_length=100, blank=True, null=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

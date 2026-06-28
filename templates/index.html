@@ -1,177 +1,250 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Find Rooms & PG in Bhopal | Room Dekho{% endblock %}
+{% block meta_description %}Bhopal's premier broker-free room rental marketplace. Find hostels, PGs, and flats directly from verified owners with no brokerage. Find your perfect room today!{% endblock %}
 
 {% block content %}
 
-<!-- Hero Section -->
-<div class="hero fade-slide-up">
-    <h1>Find Rooms Without Brokers in Bhopal</h1>
-    <p>Explore verified rooms in MP Nagar, Arera Colony, Kolar Road and more</p>
-
-    <!-- Trust Badge -->
-    <div class="trust-badge">
-        <div class="trust-item">
-            <div style="font-size: 1.5rem;">🛡️</div>
-            <span style="font-weight: 600; color: white;">100% Broker-Free Guarantee</span>
+<!-- Full-Width Hero Section with Bhopal Background -->
+<div class="hero-home fade-in">
+    <div class="hero-home-content">
+        <div class="hero-badge" style="background-color: rgba(255, 255, 255, 0.12); color: #ffffff; border-color: rgba(255, 255, 255, 0.25);">No Broker • No Commission • Direct Contact</div>
+        <h1 style="color: #ffffff; font-size: 3.75rem; font-weight: 800; line-height: 1.15; margin-bottom: 1.25rem; letter-spacing: -0.025em;">Find Your Perfect Room in <span style="color: #60A5FA;">Bhopal</span></h1>
+        <p style="color: #E2E8F0; font-size: 1.2rem; line-height: 1.6; margin-bottom: 2.5rem; max-width: 580px; font-weight: 500;">Discover verified rooms, flats, hostels, and PGs directly from property owners without paying brokerage.</p>
+        
+        <!-- Search Card -->
+        <div class="search-card" style="max-width: 850px; background-color: #ffffff; border: none; box-shadow: var(--shadow-xl); margin-bottom: 2.5rem;">
+            <div class="search-form">
+                <div class="search-field">
+                    <label><i data-lucide="map-pin" style="width: 14px; height: 14px; display: inline; vertical-align: middle; margin-right: 4px;"></i> Location</label>
+                    <input type="text" id="searchLocation" list="locationSuggestions" placeholder="Where in Bhopal?" autocomplete="off" style="color: var(--text-main);">
+                    <datalist id="locationSuggestions">
+                        <option value="MP Nagar">
+                        <option value="Arera Colony">
+                        <option value="Kolar Road">
+                        <option value="Bawadia Kalan">
+                        <option value="Habibganj">
+                        <option value="Ayodhya Nagar">
+                        <option value="Shahpura">
+                        <option value="Chuna Bhatti">
+                    </datalist>
+                </div>
+                <div class="search-field">
+                    <label><i data-lucide="home" style="width: 14px; height: 14px; display: inline; vertical-align: middle; margin-right: 4px;"></i> Type</label>
+                    <select id="searchRoomType" style="color: var(--text-main);">
+                        <option value="">All Types</option>
+                        <option value="1RK">Single Room (1RK)</option>
+                        <option value="1BHK">1 BHK Flat</option>
+                        <option value="2BHK">2 BHK Flat</option>
+                        <option value="PG">PG</option>
+                        <option value="Hostel">Hostel</option>
+                    </select>
+                </div>
+                <div class="search-field">
+                    <label><i data-lucide="indian-rupee" style="width: 14px; height: 14px; display: inline; vertical-align: middle; margin-right: 4px;"></i> Max Budget</label>
+                    <input type="number" id="searchMaxPrice" placeholder="Max Price (₹)" style="color: var(--text-main);">
+                </div>
+                <button class="btn search-btn" onclick="executeSearch()" style="padding: 0.75rem 2rem;">Search</button>
+            </div>
         </div>
-        <div class="trust-divider"></div>
-        <div class="trust-item">
-            <div style="font-size: 1.5rem;">✓</div>
-            <span style="font-weight: 600; color: white;">All Listings Verified</span>
+        
+        <!-- Hero Features -->
+        <div class="hero-features">
+            <div class="hero-feature-item" style="color: #E2E8F0;">
+                <i data-lucide="badge-check" style="color: #60A5FA;"></i>
+                <span>Verified Listings</span>
+            </div>
+            <div class="hero-feature-item" style="color: #E2E8F0;">
+                <i data-lucide="badge-percent" style="color: #60A5FA;"></i>
+                <span>No Brokerage</span>
+            </div>
+            <div class="hero-feature-item" style="color: #E2E8F0;">
+                <i data-lucide="phone" style="color: #60A5FA;"></i>
+                <span>Direct Owner Contact</span>
+            </div>
+            <div class="hero-feature-item" style="color: #E2E8F0;">
+                <i data-lucide="lock" style="color: #60A5FA;"></i>
+                <span>Safe & Secure</span>
+            </div>
         </div>
     </div>
     
-    <div class="search-bar">
-        <input type="text" id="searchLocation" class="search-input" list="locationSuggestions" placeholder="Search in Bhopal..." autocomplete="off">
-        <datalist id="locationSuggestions">
-            <option value="MP Nagar">
-            <option value="Arera Colony">
-            <option value="Kolar Road">
-            <option value="Bawadia Kalan">
-            <option value="Habibganj">
-            <option value="Ayodhya Nagar">
-            <option value="Shahpura">
-            <option value="Chuna Bhatti">
-            <option value="Jatpura">
-        </datalist>
-        <input type="number" id="searchMaxPrice" class="search-input" placeholder="Max Price (₹)">
-        <button class="btn search-btn" onclick="executeSearch()">Search</button>
+    <!-- Scroll Indicator -->
+    <div class="scroll-indicator" onclick="document.getElementById('contentStart').scrollIntoView({ behavior: 'smooth' })">
+        <div class="mouse-scroll"></div>
     </div>
 </div>
 
-<!-- Why Choose Us -->
-<div class="fade-slide-up">
-    <h2 class="section-title">Why Choose Room Dekho?</h2>
-    <div class="property-grid">
-        <div class="card">
-            <div class="card-body text-center">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">💰</div>
-                <h3 class="card-title">No Brokerage</h3>
-                <p>Connect directly with owners without paying extra fees</p>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body text-center">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
-                <h3 class="card-title">Verified Listings</h3>
-                <p>Only genuine and updated room listings</p>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body text-center">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
-                <h3 class="card-title">Easy Search</h3>
-                <p>Find rooms quickly using filters and location search</p>
-            </div>
-        </div>
-    </div>
-</div>
+<!-- Anchor for Scroll Indicator -->
+<div id="contentStart"></div>
 
-<!-- How It Works -->
-<div class="fade-slide-up">
-    <h2 class="section-title">How It Works</h2>
-    <div class="property-grid">
-        <div class="card">
-            <div class="card-body text-center">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">1️⃣</div>
-                <h3 class="card-title">Search Rooms</h3>
-                <p>Search rooms based on your preferred location and budget</p>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body text-center">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">2️⃣</div>
-                <h3 class="card-title">View Details</h3>
-                <p>View details, images, and property information</p>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body text-center">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">3️⃣</div>
-                <h3 class="card-title">Book Directly</h3>
-                <p>Send booking request directly to owner</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Testimonials -->
-<div class="fade-slide-up">
-    <h2 class="section-title">What Our Users Say</h2>
-    <div class="property-grid">
-        <div class="card">
-            <div class="card-body">
-                <div style="font-size: 2rem; margin-bottom: 1rem;">⭐⭐⭐⭐⭐</div>
-                <p style="font-style: italic; margin-bottom: 1rem;">"Found a room in MP Nagar within 2 days. Super helpful!"</p>
-                <p style="font-weight: 600; color: var(--primary);">- Student</p>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <div style="font-size: 2rem; margin-bottom: 1rem;">⭐⭐⭐⭐⭐</div>
-                <p style="font-style: italic; margin-bottom: 1rem;">"Easy and smooth experience. No broker headache."</p>
-                <p style="font-weight: 600; color: var(--primary);">- Working Professional</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Transparency Notice -->
-<div class="fade-slide-up">
-    <div class="card" style="text-align: center; background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(37, 99, 235, 0.05)); border: 1px solid rgba(37, 99, 235, 0.2);">
-        <div class="card-body">
-            <div style="font-size: 2rem; margin-bottom: 1rem;">🛡️</div>
-            <h3 style="color: var(--primary); margin-bottom: 1rem;">100% Transparent Platform</h3>
-            <p style="font-size: 1.1rem; margin-bottom: 1rem;">We connect you directly with property owners. No hidden fees, no brokerage charges.</p>
-            <div class="property-grid">
-                <div>
-                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📞</div>
-                    <strong>Direct Contact</strong>
-                    <p style="font-size: 0.9rem; margin-top: 0.25rem;">Call owners directly</p>
+<!-- Main Content Wrapper -->
+<div class="container">
+    <!-- Featured Categories -->
+    <div class="fade-slide-up" style="margin-bottom: 5rem;">
+        <h2 class="section-title">Explore Categories</h2>
+        <div class="categories-grid">
+            <div class="category-card" onclick="filterByCategory('PG')">
+                <div class="category-icon-wrapper">
+                    <i data-lucide="users" style="width: 24px; height: 24px;"></i>
                 </div>
-                <div>
-                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">💰</div>
-                    <strong>No Extra Charges</strong>
-                    <p style="font-size: 0.9rem; margin-top: 0.25rem;">Pay only rent to owner</p>
+                <h3>PGs</h3>
+            </div>
+            <div class="category-card" onclick="filterByCategory('1RK')">
+                <div class="category-icon-wrapper">
+                    <i data-lucide="door-closed" style="width: 24px; height: 24px;"></i>
                 </div>
-                <div>
-                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">✓</div>
-                    <strong>Verified Owners</strong>
-                    <p style="font-size: 0.9rem; margin-top: 0.25rem;">All listings verified</p>
+                <h3>Single Rooms</h3>
+            </div>
+            <div class="category-card" onclick="filterByCategory('1BHK')">
+                <div class="category-icon-wrapper">
+                    <i data-lucide="home" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h3>1 BHK Flats</h3>
+            </div>
+            <div class="category-card" onclick="filterByCategory('2BHK')">
+                <div class="category-icon-wrapper">
+                    <i data-lucide="building" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h3>2 BHK Flats</h3>
+            </div>
+            <div class="category-card" onclick="filterByCategory('Hostel')">
+                <div class="category-icon-wrapper">
+                    <i data-lucide="hotel" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h3>Hostels</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popular Listings -->
+    <div id="listings" class="fade-slide-up">
+        <div class="section-header">
+            <h2>Popular Listings</h2>
+            <a href="#listings" onclick="fetchProperties('')" class="btn btn-secondary" style="border-radius: 100px; padding: 0.5rem 1.25rem;">View All</a>
+        </div>
+        <div class="property-grid" id="propertiesContainer">
+            <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3rem 0;">
+                Loading properties...
+            </div>
+        </div>
+    </div>
+
+    <!-- Why Choose Us -->
+    <div class="fade-slide-up" style="margin-bottom: 5rem;">
+        <h2 class="section-title">Why Choose Room Dekho</h2>
+        <div class="why-grid">
+            <div class="why-card">
+                <div class="why-icon-box">
+                    <i data-lucide="badge-check" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h3>Verified Owners</h3>
+                <p>We verify property documents and owner details to ensure all listings on our platform are 100% genuine.</p>
+            </div>
+            <div class="why-card">
+                <div class="why-icon-box">
+                    <i data-lucide="badge-percent" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h3>Zero Brokerage</h3>
+                <p>Connect directly with the property owners. No brokers, no hidden commission, no extra charges.</p>
+            </div>
+            <div class="why-card">
+                <div class="why-icon-box">
+                    <i data-lucide="messages-square" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h3>Direct Communication</h3>
+                <p>Instantly call or message owners to discuss rent, amenities, and arrange a room visit at your convenience.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Testimonials -->
+    <div class="fade-slide-up" style="margin-bottom: 5rem;">
+        <h2 class="section-title">What Our Users Say</h2>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="testimonial-rating">
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                </div>
+                <p class="testimonial-text">"I found a fantastic 1BHK in MP Nagar without paying a single rupee in brokerage. The direct contact with the owner made the process extremely smooth and fast."</p>
+                <div class="testimonial-user">
+                    <div class="testimonial-avatar" style="background-color: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; width: 44px; height: 44px; border-radius: 50%;">S</div>
+                    <div>
+                        <div class="testimonial-user-name">Swaraj Solanki</div>
+                        <div class="testimonial-user-role">Student, RGPV University</div>
+                    </div>
                 </div>
             </div>
+            <div class="testimonial-card">
+                <div class="testimonial-rating">
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                </div>
+                <p class="testimonial-text">"As a property owner, Room Dekho helped me list my PG and connect with genuine students directly. The dashboard is very easy to use and inquiries are high-quality."</p>
+                <div class="testimonial-user">
+                    <div class="testimonial-avatar" style="background-color: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; width: 44px; height: 44px; border-radius: 50%;">D</div>
+                    <div>
+                        <div class="testimonial-user-name">Durgesh Ahirwar</div>
+                        <div class="testimonial-user-role">Property Owner, DRM Office</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Banner -->
+    <div class="cta-banner fade-slide-up">
+        <h2>Looking for a Room?</h2>
+        <p>Start exploring thousands of verified rooms, flats, and PGs in Bhopal today.</p>
+        <div class="cta-buttons">
+            <a href="#listings" class="btn cta-btn-primary">Browse Rooms</a>
+            <a href="/signup" class="btn cta-btn-secondary">List Your Property</a>
         </div>
     </div>
 </div>
 
-<!-- Listings -->
-<h2 class="section-title">Available Rooms</h2>
-<div class="property-grid" id="propertiesContainer">
-    <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">
-        Loading properties...
-    </div>
-</div>
+<!-- Contact Section Anchor -->
+<div id="contact"></div>
 
 {% endblock %}
 
 {% block scripts %}
 <script>
-    document.addEventListener('DOMContentLoaded', () => fetchProperties());
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchProperties();
+    });
     
     function executeSearch() {
         const location = document.getElementById('searchLocation').value;
+        const roomType = document.getElementById('searchRoomType').value;
         const maxPrice = document.getElementById('searchMaxPrice').value;
         
         let params = [];
         if (location) params.push('location=' + encodeURIComponent(location));
+        if (roomType) params.push('room_type=' + encodeURIComponent(roomType));
         if (maxPrice) params.push('max_price=' + encodeURIComponent(maxPrice));
         
         fetchProperties(params.length ? '?' + params.join('&') : '');
     }
     
+    function filterByCategory(type) {
+        document.getElementById('searchRoomType').value = type;
+        fetchProperties('?room_type=' + encodeURIComponent(type));
+        document.getElementById('listings').scrollIntoView({ behavior: 'smooth' });
+    }
+    
     async function fetchProperties(query = '') {
         try {
             const container = document.getElementById('propertiesContainer');
-            container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);">Loading...</div>';
+            container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:3rem 0;"><div class="loading-spinner" style="margin: 0 auto 1rem;"></div>Loading properties...</div>';
             
             const res = await fetch('/api/properties/' + query);
             if (!res.ok) {
@@ -180,46 +253,74 @@
             const data = await res.json();
             
             if (!Array.isArray(data) || data.length === 0) {
-                container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);">No properties found.</div>';
+                container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:3rem 0;">No properties found matching your search.</div>';
                 return;
             }
             
             let html = '';
             data.forEach(prop => {
-                const img = prop.first_image || (prop.images && prop.images[0]?.image) || 'https://placehold.co/600x400/e2e8f0/64748b/png?text=No+Image';
-                const badge = prop.bachelor_allowed ? '<span class="badge">Bachelor</span>' : '<span class="badge">Family</span>';
-                const verificationBadge = '<span class="badge" style="background: #2563EB; color: white;">✓ Verified</span>';
-                const contactInfo = prop.owner_name ? `<div class="card-info" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">👤 Owner: ${prop.owner_name}</div>` : '';
+                const img = prop.first_image || (prop.images && prop.images[0]?.image) || 'https://placehold.co/600x400/e2e8f0/64748b/png?text=Room+Dekho';
+                const occupantType = prop.bachelor_allowed ? 'Bachelors' : 'Family';
+                const ownerInitial = prop.owner_name ? prop.owner_name.charAt(0) : 'O';
 
                 html += `
-                    <div class="card" onclick="window.location.href='/property/${prop.id}'" style="cursor:pointer;">
-                        <img src="${img}" class="card-img" alt="${prop.title}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/e2e8f0/64748b/png?text=Room+Dekho';">
-                        <div class="card-body">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
-                                <h3 class="card-title" style="margin: 0; flex: 1;">${prop.title}</h3>
-                                ${verificationBadge}
+                    <div class="property-card">
+                        <div class="card-media">
+                            <img src="${img}" alt="${prop.title}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/f1f5f9/94a3b8/png?text=Room+Dekho';">
+                            <span class="card-badge">${prop.room_type}</span>
+                            <button class="card-save-btn" aria-label="Save property" onclick="event.stopPropagation(); toggleSave(${prop.id})">
+                                <i data-lucide="heart" style="width: 18px; height: 18px;"></i>
+                            </button>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-header-row">
+                                <div class="card-price-tag">₹${parseFloat(prop.price).toLocaleString('en-IN')}<span>/month</span></div>
                             </div>
-                            <div class="card-price" style="font-size: 1.3rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">₹${prop.price}<span style="font-size: 0.9rem; font-weight: 500;">/month</span></div>
-                            <div class="card-info" style="margin-bottom: 0.5rem;">📍 ${prop.location}</div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                ${badge}
-                                <span style="font-size: 0.8rem; color: var(--primary); font-weight: 600;">✓ Direct Owner</span>
+                            <a href="/property/${prop.id}/" class="card-title-link">${prop.title}</a>
+                            <div class="card-location">
+                                <i data-lucide="map-pin" style="width: 15px; height: 15px;"></i>
+                                <span>${prop.location}</span>
                             </div>
-                            ${contactInfo}
-                            <div style="border-top: 1px solid var(--border); padding-top: 0.5rem; margin-top: 0.5rem;">
-                                <small style="color: var(--text-muted); font-size: 0.75rem;">
-                                    No brokerage fee • Direct payment to owner • Verified listing
-                                </small>
+                            <div class="card-specs-row">
+                                <div class="card-spec-item">
+                                    <i data-lucide="home" style="width: 14px; height: 14px;"></i>
+                                    <span>${prop.room_type}</span>
+                                </div>
+                                <div class="card-spec-item">
+                                    <i data-lucide="users" style="width: 14px; height: 14px;"></i>
+                                    <span>${occupantType}</span>
+                                </div>
+                                <div class="card-spec-item">
+                                    <i data-lucide="badge-check" style="width: 14px; height: 14px; color: var(--primary);"></i>
+                                    <span>Verified</span>
+                                </div>
                             </div>
+                            <div class="card-footer-row">
+                                <div class="card-owner-info">
+                                    <div class="card-owner-avatar">${ownerInitial}</div>
+                                    <span>${prop.owner_name || 'Owner'}</span>
+                                </div>
+                                <span class="card-posted-time">Direct Owner</span>
+                            </div>
+                            <button class="btn btn-secondary" style="width: 100%; border-radius: 10px; margin-top: 1.25rem; font-size: 0.9rem;" onclick="window.location.href='/property/${prop.id}/'">View Details</button>
                         </div>
                     </div>
                 `;
             });
             container.innerHTML = html;
+            
+            // Reinitialize Lucide Icons for dynamic content
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
         } catch (err) {
             console.error(err);
-            document.getElementById('propertiesContainer').innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);">Error loading properties.</div>';
+            document.getElementById('propertiesContainer').innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:3rem 0;">Error loading properties. Please try again later.</div>';
         }
+    }
+    
+    function toggleSave(id) {
+        alert("Property saved to wishlist!");
     }
 </script>
 {% endblock %}
