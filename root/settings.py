@@ -81,7 +81,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'root.wsgi.application'
 
 USE_SQLITE = os.getenv('USE_SQLITE', 'False') == 'True'
-DATABASE_URL = os.getenv('DATABASE_URL')
+DATABASE_URL = os.getenv('DATABASE_URL') or os.getenv('POSTGRES_URL')
 
 if USE_SQLITE and not DATABASE_URL:
     sqlite_path = os.getenv('SQLITE_PATH')
